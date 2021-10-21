@@ -6,4 +6,4 @@ Idée de base :
   avec ces données :
     - calculer l'effort réalisé sur un parcours. (code C)
       (work pour dénivelée positive + work Ffrottements)
-    - envoyer position gps si vol
+    - envoyer position gps si vol (duo python&C/C++)
