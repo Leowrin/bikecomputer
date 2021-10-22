@@ -2,10 +2,14 @@
 #import serial
 import time
 
-ser = serial.Serial("/dev/Serial0") ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
-ser.baudrate = 9600
+ser = serial.Serial("/dev/Serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
+
 while 1:
     try:
-        data = ser.read()
+        text = ser.readline()
+        data = text.split(',')
+        if data[0] == "$GPGGA":
+            ### continue
+
     except KeyboardInterrupt:
         break
