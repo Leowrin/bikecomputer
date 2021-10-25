@@ -15,3 +15,5 @@ Idée de base :
 
     https://gist.github.com/hdoverobinson/42732da4c5b50d031f60c1fae39f0720
     https://www.engineersgarage.com/articles-raspberry-pi-neo-6m-gps-module-interfacing/
+    
+    https://fr.wikipedia.org/wiki/NMEA_0183#cite_note-SommeDeControleNMEA-4
