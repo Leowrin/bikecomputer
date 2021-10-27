@@ -10,7 +10,7 @@ while 1:
         data = text.split(',')
         print(text)
         if data[0] == "$GPGGA":
-            ### continue
+            pass
 
     except KeyboardInterrupt:
         break
