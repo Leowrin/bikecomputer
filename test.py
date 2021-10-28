@@ -16,25 +16,25 @@ while 1:
             text = ser.readline()
         except:
             print("failed to read GPS")
-            
+
         text = str(text)
         data = text.split(",")
         #print(data)
         if data[0] == "$GPGGA" or data[0] == "b'$GPGGA":
             print("YES")
-            gpgga.append(float(data[2]))
-            gpgga.append(float(data[4]))
-            gpgga.append(float(data[9]))
-            
+            lat = float(data[2]))
+            lon = float(data[4]))
+            alt = float(data[9]))
+
             #print(gpgga)
             print(np.shape(coordinates))
             print(np.shape(gpgga))
-            coordinates = np.append(coordinates, gpgga, axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
+            coordinates = np.append(coordinates, [lat, lon, alt], axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
             print(gpgga)
-            
+
             print(coordinates)
-        
-        
+
+
     except KeyboardInterrupt:
-        
+
         break
