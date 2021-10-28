@@ -5,7 +5,6 @@ import numpy as np
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
-gpgga = []
 coordinates = np.empty((0, 3))
 
 
@@ -28,10 +27,7 @@ while 1:
 
             #print(gpgga)
             print(np.shape(coordinates))
-            print(np.shape(gpgga))
             coordinates = np.append(coordinates, [lat, lon, alt], axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
-            print(gpgga)
-
             print(coordinates)
 
 
