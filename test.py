@@ -9,6 +9,7 @@ coordinates = np.empty((0, 3))
 
 filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
 
+
 while 1:
     try:
         try:
@@ -18,14 +19,13 @@ while 1:
 
         text = str(text)
         data = text.split(",")
-        #print(data)
+
         if data[0] == "$GPGGA" or data[0] == "b'$GPGGA":
             print("YES")
             lat = float(data[2])
             lon = float(data[4])
             alt = float(data[9])
 
-            #print(gpgga)
             print(np.shape(coordinates))
             coordinates = np.append(coordinates, [lat, lon, alt], axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
             print(coordinates)
@@ -33,4 +33,5 @@ while 1:
 
     except KeyboardInterrupt:
         np.savetxt(filename)
+        #terminer python et lancer C
         break
