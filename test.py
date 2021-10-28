@@ -21,9 +21,9 @@ while 1:
         #print(data)
         if data[0] == "$GPGGA" or data[0] == "b'$GPGGA":
             print("YES")
-            lat = float(data[2]))
-            lon = float(data[4]))
-            alt = float(data[9]))
+            lat = float(data[2])
+            lon = float(data[4])
+            alt = float(data[9])
 
             #print(gpgga)
             print(np.shape(coordinates))
