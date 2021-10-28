@@ -7,6 +7,7 @@ ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyseria
 
 coordinates = np.empty((0, 3))
 
+filename = str(time.strftime(%Y_%m_%d_%H_%M, time.localtime()))
 
 while 1:
     gpgga = []
@@ -32,5 +33,5 @@ while 1:
 
 
     except KeyboardInterrupt:
-
+        np.savetxt(filename)
         break
