@@ -5,7 +5,7 @@ import numpy as np
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
-coordinates = np.array(("lat", "lon", "alt"))
+coordinates = np.array(())
 
 filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
 
@@ -40,7 +40,7 @@ while 1:
 
                 print(np.shape(coordinates))
                 print(np.shape([[lat, lon, alt]]))
-                coordinates = np.append(coordinates, [[lat], [lon], [alt]], axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
+                coordinates = np.concatenate((coordinates, [[lat], [lon], [alt]]), axis=0)
                 print(coordinates)
             
         #else :
