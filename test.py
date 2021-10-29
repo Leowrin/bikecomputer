@@ -5,7 +5,7 @@ import numpy as np
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
-coordinates = np.empty((0, 3))
+coordinates = np.array(("lat", "lon", "alt"))
 
 filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
 
@@ -22,23 +22,27 @@ while 1:
             print("failed to read GPS")
 
         text = str(text)
-        data = text.split(",")
-        print(text)
-        try :
-            tmp = float(data[5])
+        if text.split(",")[0] == "$GPGGA" or text.split(",")[0] == "b'$GPGGA" :
+            data = text.split(",")
+            print(data)
             
-        except :
-            tmp = 0
+            try :
+                tmp = float(data[7])
             
-        if (data[0] == "$GPGGA" or data[0] == "b'$GPGGA") and tmp>0:
-            print("YES")
-            lat = float(data[2])
-            lon = float(data[4])
-            alt = float(data[9])
+            except :
+                tmp = 0
+            
+            if tmp>0 :
+                print(data)
+                lat = float(data[2])
+                lon = float(data[4])
+                alt = float(data[9])
 
-            print(np.shape(coordinates))
-            coordinates = np.append(coordinates, [lat, lon, alt], axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
-            print(coordinates)
+                print(np.shape(coordinates))
+                print(np.shape([[lat, lon, alt]]))
+                coordinates = np.append(coordinates, [[lat], [lon], [alt]], axis=0) #append cree une copie, le = est necessaire. a mettre directement et reshape !
+                print(coordinates)
+            
         #else :
         #    print("no GPS signal or no GPGGA serial input")
 
