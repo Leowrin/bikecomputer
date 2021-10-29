@@ -27,13 +27,15 @@ while count<10 :
             data = text.split(",")
             
             try :
-                tmp = float(data[7])
-                tmp1 = float(data[2])
+                ### check nb satellites et coo
+                satellites = int(data[7])
+                float(data[2])
             
             except :
-                tmp = 0
+                satellites = 0
             
-            if tmp>0 :
+            ### précision vs sample rate, tmp>0 pour toutes valeurs, satellites > 3 pour précision max
+            if satellites>3 :
                 lat = float(data[2])
                 lon = float(data[4])
                 alt = float(data[9])
@@ -50,6 +52,6 @@ while count<10 :
         
         #terminer python et lancer C
         break
-    
+### save en csv    
 np.savetxt(filename, coordinates, delimiter=',')
 exit()
