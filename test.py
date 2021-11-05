@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO #uncomment on rPi
 import serial
 import time
 import numpy as np
+import os
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
@@ -36,8 +37,8 @@ while count<10 :
 
             ### précision vs sample rate, tmp>0 pour toutes valeurs, satellites > 3 pour précision max
             if satellites>3 :
-                lat = float(data[2])
-                lon = float(data[4])
+                lat = float(data[2])/10
+                lon = float(data[4])/10
                 alt = float(data[9])
 
 
@@ -57,4 +58,7 @@ while count<10 :
 np.savetxt(filename, coordinates, fmt='%f', delimiter=',')
 
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
+cmd = "./compute_info " + filename + " " + coordinates.shape[0]
+os.system("./compute_info")
+
 exit()
