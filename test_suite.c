@@ -51,11 +51,36 @@ int main(int argc, char *argv[]) {
 
 
   //creation du bloc memoire pour les points gps
-  double * gpsPoints = malloc(3 * csvLen * sizeof (double));
+  double * pythonFile = malloc(3 * csvLen * sizeof (double));
   //lecture du fichier et copie dans memoire ^.
-  readCsv(filename, gpsPoints, 3, csvLen);
+  readCsv(filename, pythonFile, 3, csvLen);
+
+  //copie des pts gps
+  double * wgs84 = malloc(2 * csvLen * sizeof (double));
+  double * lv95X = malloc(csvLen * sizeof (double));
+  double * lv95Y = malloc(csvLen * sizeof (double));
 
 
+
+  for (size_t i = 0; i < csvLen; i++) {
+    for (size_t j = 0; j < 2; j++) {
+      wgs84 = pythonFile[i * 2 + j];
+    }
+  }
+
+  for (size_t i = 0; i < csvLen; i++) {
+    //axe X selon LV95
+    double phi = wgs84[i * 2]*3600;
+    double phiP = (phi - 169028.66) / 10000;
+    double lambda = wgs84[i * 2 + 1];
+    double lambdaP = (lambda - 26782.5) / 10000;
+
+    lv95X[i] = 2600072.37;
+    lv95X[i] += 211455.93 * lambdaP;
+    lv95X[i] -= 10938.51 * lambdaP * phiP;
+    lv95X[i] -= 0.36 * lambdaP * phiP * phiP;
+    lv95X[i] -= 44.54 * phiP * phiP * phiP;
+  }
 
   //creation d'une variable deltaH
   double * deltaH = malloc((csvLen-1) * 1 * sizeof (double));
@@ -63,7 +88,7 @@ int main(int argc, char *argv[]) {
   //calcul de deltaH entre chaque mesure
   for (size_t i = 0; i < csvLen-1; i++) {
     int j = i+1;
-    deltaH[i] = gpsPoints[j * 3 + 2] - gpsPoints[i * 3 + 2];
+    deltaH[i] = pythonFile[j * 3 + 2] - pythonFile[i * 3 + 2];
   }
 
   //calcul du denivele possitif
@@ -81,6 +106,9 @@ int main(int argc, char *argv[]) {
   workg /= 3600;
   printf("%f\n", workg);
 
+  free(pythonFile);
+  free(deltaH);
+  free(gpsPoints);
 
   return 0;
 }
