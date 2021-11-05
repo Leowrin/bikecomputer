@@ -42,7 +42,6 @@ while count<10 :
 
                 
                 coordinates = np.concatenate((coordinates, [[lat, lon, alt]]), axis=0)
-                print(coordinates)
                 count+=1
             
         #else :
@@ -52,6 +51,9 @@ while count<10 :
         
         #terminer python et lancer C
         break
-### save en csv    
+### save en csv
+
 np.savetxt(filename, coordinates, delimiter=',')
+
+### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
 exit()
