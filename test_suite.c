@@ -107,6 +107,24 @@ int main(int argc, char *argv[]) {
     }
   }
 
+
+  //calcul deltaX
+  double deltaX = 0;
+
+  for (size_t i = 0; i < csvLen-1; i++) {
+    deltaX += abs(lv95X[i+1] - lv95X[i]);
+  }
+
+  //calcul deltaY
+  double deltaY = 0;
+
+  for (size_t i = 0; i < csvLen-1; i++) {
+    deltaY += abs(lv95Y[i+1] - lv95Y[i]);
+  }
+
+
+
+
   for (size_t i = 0; i < csvLen; i++) {
     printf("E: %f, N: %f\n", lv95X[i], lv95Y[i]);
   }
@@ -118,6 +136,7 @@ int main(int argc, char *argv[]) {
   //conversion en wattheure.
   workg /= 3600;
   printf("%f\n", workg);
+  printf("deltaX = %f\ndeltaY = %f\n", deltaX, deltaY);
 
   free(pythonFile);
   free(deltaH);
