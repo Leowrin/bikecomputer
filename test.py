@@ -37,8 +37,8 @@ while count<10 :
 
             ### précision vs sample rate, tmp>0 pour toutes valeurs, satellites > 3 pour précision max
             if satellites>3 :
-                lat = float(data[2])/10
-                lon = float(data[4])/10
+                lat = float(data[2])/100
+                lon = float(data[4])/100
                 alt = float(data[9])
 
 

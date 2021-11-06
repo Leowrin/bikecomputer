@@ -64,7 +64,8 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < csvLen; i++) {
     for (size_t j = 0; j < 2; j++) {
-      wgs84 = pythonFile[i * 2 + j];
+      wgs84[i * 2 + j] = pythonFile[i * 3 + j] / 100;
+      printf("%f\n", wgs84[i * 2 + j]);
     }
   }
 
@@ -80,6 +81,14 @@ int main(int argc, char *argv[]) {
     lv95X[i] -= 10938.51 * lambdaP * phiP;
     lv95X[i] -= 0.36 * lambdaP * phiP * phiP;
     lv95X[i] -= 44.54 * phiP * phiP * phiP;
+
+    //axe Y
+    lv95Y[i] = 1200147.07;
+    lv95Y[i] += 308807.95 * phiP;
+    lv95Y[i] += 3745.25 * lambdaP * lambdaP;
+    lv95Y[i] += 76.63 * phiP * phiP;
+    lv95Y[i] -= 194.56 * lambdaP * lambdaP * phiP;
+    lv95Y[i] += 119.79 * phiP * phiP * phiP;
   }
 
   //creation d'une variable deltaH
@@ -98,6 +107,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  for (size_t i = 0; i < csvLen; i++) {
+    printf("E: %f, N: %f\n", lv95X[i], lv95Y[i]);
+  }
+
   //calcul du travail en joules, masse * g * H
   double workg = 0;
   workg = 90 * 9.81 * dPos;
@@ -108,7 +121,8 @@ int main(int argc, char *argv[]) {
 
   free(pythonFile);
   free(deltaH);
-  free(gpsPoints);
+  free(lv95X);
+  free(lv95Y);
 
   return 0;
 }
