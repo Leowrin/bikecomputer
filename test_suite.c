@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 
 //read csv
@@ -35,6 +36,12 @@ bool readCsv(char * filename, double * values, int sizeX, int sizeY) {
     return true;
 }
 
+/*
+double wgsTolv95X {
+
+}
+*/
+
 
 
 
@@ -64,8 +71,8 @@ int main(int argc, char *argv[]) {
 
   for (size_t i = 0; i < csvLen; i++) {
     for (size_t j = 0; j < 2; j++) {
-      wgs84[i * 2 + j] = pythonFile[i * 3 + j] / 100;
-      printf("%f\n", wgs84[i * 2 + j]);
+      wgs84[i * 2 + j] = pythonFile[i * 3 + j] / 100;  //a supprimer le /100 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      //printf("%f\n", wgs84[i * 2 + j]);
     }
   }
 
@@ -108,25 +115,47 @@ int main(int argc, char *argv[]) {
   }
 
 
-  //calcul deltaX
-  double deltaX = 0;
+  double * deltaX = calloc((csvLen - 1), sizeof (double));
+  double * deltaY = calloc((csvLen - 1), sizeof (double));
 
-  for (size_t i = 0; i < csvLen-1; i++) {
-    deltaX += abs(lv95X[i+1] - lv95X[i]);
+
+  for (size_t i = 0; i < csvLen - 1; i++) {
+    double tmp = fabs(lv95X[i] - lv95X[i + 1]);
+
+    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data
+    if (tmp > 20 || tmp < 0.4) {
+      tmp = 0;
+    }
+
+    deltaX[i] = tmp;
   }
 
-  //calcul deltaY
-  double deltaY = 0;
 
-  for (size_t i = 0; i < csvLen-1; i++) {
-    deltaY += abs(lv95Y[i+1] - lv95Y[i]);
+  for (size_t i = 0; i < csvLen - 1; i++) {
+    double tmp = fabs(lv95Y[i] - lv95Y[i + 1]);
+
+    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data
+    if (tmp > 20 || tmp < 0.4) {
+      tmp = 0;
+    }
+
+    deltaY[i] = tmp;
   }
 
 
 
 
+
+
+
+/*
   for (size_t i = 0; i < csvLen; i++) {
     printf("E: %f, N: %f\n", lv95X[i], lv95Y[i]);
+  }
+*/
+
+  for (size_t i = 0; i < csvLen - 1; i++) {
+    printf("%f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i]);
   }
 
   //calcul du travail en joules, masse * g * H
@@ -135,8 +164,8 @@ int main(int argc, char *argv[]) {
 
   //conversion en wattheure.
   workg /= 3600;
-  printf("%f\n", workg);
-  printf("deltaX = %f\ndeltaY = %f\n", deltaX, deltaY);
+  //printf("%f\n", workg);
+
 
   free(pythonFile);
   free(deltaH);
