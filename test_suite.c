@@ -46,9 +46,7 @@ double wgsTolv95X {
 
 
 int main(int argc, char *argv[]) {
-
-  double dPos = 0;
-  //lecture des arguments
+  //lecture des arguments lors de l'appel du script
   if (argc != 3) {
     printf("err1");
     return 1;
@@ -57,30 +55,41 @@ int main(int argc, char *argv[]) {
   int csvLen = atoi(argv[2]);
 
 
-  //creation du bloc memoire pour les points gps
+  //creation des tableaux
+    //creation du bloc memoire pour les points gps
   double * pythonFile = malloc(3 * csvLen * sizeof (double));
-  //lecture du fichier et copie dans memoire ^.
-  readCsv(filename, pythonFile, 3, csvLen);
 
-  //copie des pts gps
   double * wgs84 = malloc(2 * csvLen * sizeof (double));
   double * lv95X = malloc(csvLen * sizeof (double));
   double * lv95Y = malloc(csvLen * sizeof (double));
 
+  double * deltaH = malloc((csvLen-1) * 1 * sizeof (double));
+
+  double * deltaX = calloc((csvLen - 1), sizeof (double));
+  double * deltaY = calloc((csvLen - 1), sizeof (double));
+
+  //lecture du fichier et copie dans memoire ^.
+  readCsv(filename, pythonFile, 3, csvLen);
 
 
+
+  double dPos = 0;
+
+
+  //copie des points GPS, utile uniquement pour debug et probleme export python
   for (size_t i = 0; i < csvLen; i++) {
     for (size_t j = 0; j < 2; j++) {
       wgs84[i * 2 + j] = pythonFile[i * 3 + j] / 100;  //a supprimer le /100 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      //printf("%f\n", wgs84[i * 2 + j]);
     }
   }
 
+
+  //creation des coo lv95 N et E
   for (size_t i = 0; i < csvLen; i++) {
     //axe X selon LV95
     double phi = wgs84[i * 2]*3600;
     double phiP = (phi - 169028.66) / 10000;
-    double lambda = wgs84[i * 2 + 1];
+    double lambda = wgs84[i * 2 + 1]*3600;
     double lambdaP = (lambda - 26782.5) / 10000;
 
     lv95X[i] = 2600072.37;
@@ -99,7 +108,7 @@ int main(int argc, char *argv[]) {
   }
 
   //creation d'une variable deltaH
-  double * deltaH = malloc((csvLen-1) * 1 * sizeof (double));
+
 
   //calcul de deltaH entre chaque mesure
   for (size_t i = 0; i < csvLen-1; i++) {
@@ -115,8 +124,7 @@ int main(int argc, char *argv[]) {
   }
 
 
-  double * deltaX = calloc((csvLen - 1), sizeof (double));
-  double * deltaY = calloc((csvLen - 1), sizeof (double));
+
 
 
   for (size_t i = 0; i < csvLen - 1; i++) {
@@ -153,9 +161,14 @@ int main(int argc, char *argv[]) {
     printf("E: %f, N: %f\n", lv95X[i], lv95Y[i]);
   }
 */
-
+/*
   for (size_t i = 0; i < csvLen - 1; i++) {
     printf("%f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i]);
+  }
+*/
+  for (size_t i = 0; i < csvLen - 1; i++) {
+    printf("%f, %f\n", wgs84[i * 2], wgs84[i * 2 + 1]);
+    printf("%f, %f\n", lv95X[i], lv95Y[i]);
   }
 
   //calcul du travail en joules, masse * g * H
@@ -168,9 +181,12 @@ int main(int argc, char *argv[]) {
 
 
   free(pythonFile);
-  free(deltaH);
+  free(wgs84);
   free(lv95X);
   free(lv95Y);
+  free(deltaH);
+  free(deltaX);
+  free(deltaY);
 
   return 0;
 }

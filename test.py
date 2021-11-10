@@ -3,6 +3,7 @@ import serial
 import time
 import numpy as np
 import os
+import mat
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
@@ -60,5 +61,8 @@ np.savetxt(filename, coordinates, fmt='%f', delimiter=',')
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
 cmd = "./compute_info " + filename + " " + coordinates.shape[0]
 os.system("./compute_info")
+
+### debug
+sleep(3)
 
 exit()
