@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
   //copie des points GPS, utile uniquement pour debug et probleme export python
   for (size_t i = 0; i < csvLen; i++) {
     for (size_t j = 0; j < 2; j++) {
-      wgs84[i * 2 + j] = pythonFile[i * 3 + j] / 100;  //a supprimer le /100 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      wgs84[i * 2 + j] = pythonFile[i * 3 + j];
     }
   }
 
@@ -161,16 +161,15 @@ int main(int argc, char *argv[]) {
     printf("E: %f, N: %f\n", lv95X[i], lv95Y[i]);
   }
 */
+
+  for (size_t i = 0; i < csvLen - 1; i++) {
+    printf("%f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], pythonFile[i * 3 + 2]);
+  }
 /*
   for (size_t i = 0; i < csvLen - 1; i++) {
-    printf("%f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i]);
-  }
-*/
-  for (size_t i = 0; i < csvLen - 1; i++) {
-    printf("%f, %f\n", wgs84[i * 2], wgs84[i * 2 + 1]);
     printf("%f, %f\n", lv95X[i], lv95Y[i]);
   }
-
+*/
   //calcul du travail en joules, masse * g * H
   double workg = 0;
   workg = 90 * 9.81 * dPos;
