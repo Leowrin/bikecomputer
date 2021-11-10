@@ -3,7 +3,7 @@ import serial
 import time
 import numpy as np
 import os
-import mat
+import math
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
@@ -16,7 +16,7 @@ filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
 
 count=0
 
-while count<10 :
+while count<1000 :
 
     try:
         try:
@@ -41,6 +41,19 @@ while count<10 :
                 lat = float(data[2])/100
                 lon = float(data[4])/100
                 alt = float(data[9])
+                
+                
+                tmp = lat - math.floor(lat)
+                tmp /= 60
+                lat = math.floor(lat)
+                lat += tmp*100
+                lat = round(lat, 7)
+                
+                tmp = lon - math.floor(lon)
+                tmp /= 60
+                lon = math.floor(lon)
+                lon += tmp*100
+                lon = round(lon, 7)
 
 
                 coordinates = np.concatenate((coordinates, [[lat, lon, alt]]), axis=0)
@@ -57,12 +70,13 @@ while count<10 :
 
 ### %f ou %1.10f ?????????????????????????????????????????????????????????????????????????????????????
 np.savetxt(filename, coordinates, fmt='%f', delimiter=',')
+print("DONE")
 
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
-cmd = "./compute_info " + filename + " " + coordinates.shape[0]
-os.system("./compute_info")
-
-### debug
-sleep(3)
+# cmd = "./compute_info " + filename + " " + coordinates.shape[0]
+# os.system("./compute_info")
+# 
+# ### debug
+# sleep(3)
 
 exit()
