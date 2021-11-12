@@ -58,12 +58,14 @@ int main(int argc, char *argv[]) {
   double * lv95X = malloc(csvLen * sizeof (double));
   double * lv95Y = malloc(csvLen * sizeof (double));
 
-  double * deltaH = malloc((csvLen-1) * 1 * sizeof (double));
+  double * deltaH = calloc((csvLen-1) * 1 * sizeof (double));
 
   double * deltaX = calloc((csvLen - 1), sizeof (double));
   double * deltaY = calloc((csvLen - 1), sizeof (double));
 
   double * deltaM = calloc((csvLen - 1), sizeof (double));
+
+  double * sumDeltaM = calloc((csvLen), sizeof (double));
 
   //lecture du fichier et copie dans memoire ^.
   readCsv(filename, pythonFile, 3, csvLen);
@@ -107,7 +109,7 @@ int main(int argc, char *argv[]) {
 
 
   //calcul de deltaH entre chaque mesure
-  for (size_t i = 0; i < csvLen-1; i++) {
+  for (size_t i = 0; i < csvLen - 1; i++) {
     int j = i+1;
     deltaH[i] = pythonFile[j * 3 + 2] - pythonFile[i * 3 + 2];
   }
@@ -122,7 +124,7 @@ int main(int argc, char *argv[]) {
 
 
 
-  //debug des delta X pour enlever les "teleport"
+  // creation delta X et debug pour enlever les "teleport"
   for (size_t i = 0; i < csvLen - 1; i++) {
     double tmp = fabs(lv95X[i] - lv95X[i + 1]);
 
@@ -134,7 +136,7 @@ int main(int argc, char *argv[]) {
     deltaX[i] = tmp;
   }
 
-  //debug de delta Y pour enlever les "teleport"
+  // creation delta Y et debug pour enlever les "teleport"
   for (size_t i = 0; i < csvLen - 1; i++) {
     double tmp = fabs(lv95Y[i] - lv95Y[i + 1]);
 
@@ -146,22 +148,29 @@ int main(int argc, char *argv[]) {
     deltaY[i] = tmp;
   }
 
+  //creation de deltaM
+  for (size_t i = 0; i < csvLen - 1; i++) {
+    double tmp = deltaX[i] * deltaX[i] + deltaY[i] * deltaY[i];
+    tmp = sqrt(tmp);
 
+    deltaM[i] = tmp;
+  }
 
-
+  //creation de sumDeltaM . a changer l'index une fois le ToDo https://github.com/Leowrin/bikecomputer/projects/1#card-72750098 fait
+  for (size_t i = 1; i < csvLen; i++) {
+    sumDeltaM[i] = sumDeltaM[i-1] + deltaM[i-1];
+  }
 
 
 
 
 
   for (size_t i = 0; i < csvLen - 1; i++) {
-    printf("%f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], pythonFile[i * 3 + 2]);
+    printf("%f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], pythonFile[i * 3 + 2], deltaH[i], sumDeltaM[i]);
   }
-/*
-  for (size_t i = 0; i < csvLen - 1; i++) {
-    printf("%f, %f\n", lv95X[i], lv95Y[i]);
-  }
-*/
+
+
+
   //calcul du travail en joules, masse * g * H
   double workg = 0;
   workg = 90 * 9.81 * dPos;
@@ -178,6 +187,7 @@ int main(int argc, char *argv[]) {
   free(deltaH);
   free(deltaX);
   free(deltaY);
+  free(deltaM);
 
   return 0;
 }
