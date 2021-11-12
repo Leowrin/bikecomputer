@@ -8,9 +8,14 @@ filename = "toDelete.csv"
 
 file = np.genfromtxt(filename, delimiter = ', ', dtype = None)
 
+(p1, p2) = plt.subplots(2)
 
 
-plt.plot(file[:,6], file[:, 5])
+
+p1.plot(file[:,5], file[:, 7])
+
+p2.plot(np.arange(0,1000), file[:, 7])
+
 
 plt.grid()
 

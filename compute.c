@@ -58,12 +58,12 @@ int main(int argc, char *argv[]) {
   double * lv95X = malloc(csvLen * sizeof (double));
   double * lv95Y = malloc(csvLen * sizeof (double));
 
-  double * deltaH = calloc((csvLen-1) * 1 * sizeof (double));
+  double * deltaH = calloc((csvLen), sizeof (double));
 
-  double * deltaX = calloc((csvLen - 1), sizeof (double));
-  double * deltaY = calloc((csvLen - 1), sizeof (double));
+  double * deltaX = calloc((csvLen), sizeof (double));
+  double * deltaY = calloc((csvLen), sizeof (double));
 
-  double * deltaM = calloc((csvLen - 1), sizeof (double));
+  double * deltaM = calloc((csvLen), sizeof (double));
 
   double * sumDeltaM = calloc((csvLen), sizeof (double));
 
@@ -109,13 +109,13 @@ int main(int argc, char *argv[]) {
 
 
   //calcul de deltaH entre chaque mesure
-  for (size_t i = 0; i < csvLen - 1; i++) {
-    int j = i+1;
-    deltaH[i] = pythonFile[j * 3 + 2] - pythonFile[i * 3 + 2];
+  for (size_t i = 1; i < csvLen; i++) {
+    int j = i-1;
+    deltaH[i] = pythonFile[i * 3 + 2] - pythonFile[j * 3 + 2];
   }
 
   //calcul du denivele possitif
-  for (size_t i = 0; i < csvLen-1; i++) {
+  for (size_t i = 0; i < csvLen - 1; i++) {
     if (deltaH[i] > 0) {
       dPos += deltaH[i];
     }
@@ -125,11 +125,11 @@ int main(int argc, char *argv[]) {
 
 
   // creation delta X et debug pour enlever les "teleport"
-  for (size_t i = 0; i < csvLen - 1; i++) {
-    double tmp = fabs(lv95X[i] - lv95X[i + 1]);
+  for (size_t i = 1; i < csvLen; i++) {
+    double tmp = lv95X[i] - lv95X[i - 1];
 
     //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data
-    if (tmp > 20 || tmp < 0.4) {
+    if (fabs(tmp) > 20 || fabs(tmp) < 0.4) {
       tmp = 0;
     }
 
@@ -137,11 +137,11 @@ int main(int argc, char *argv[]) {
   }
 
   // creation delta Y et debug pour enlever les "teleport"
-  for (size_t i = 0; i < csvLen - 1; i++) {
-    double tmp = fabs(lv95Y[i] - lv95Y[i + 1]);
+  for (size_t i = 1; i < csvLen; i++) {
+    double tmp = lv95Y[i] - lv95Y[i + 1];
 
     //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data
-    if (tmp > 20 || tmp < 0.4) {
+    if (fabs(tmp) > 20 || fabs(tmp) < 0.4) {
       tmp = 0;
     }
 
@@ -149,24 +149,24 @@ int main(int argc, char *argv[]) {
   }
 
   //creation de deltaM
-  for (size_t i = 0; i < csvLen - 1; i++) {
+  for (size_t i = 1; i < csvLen; i++) {
     double tmp = deltaX[i] * deltaX[i] + deltaY[i] * deltaY[i];
     tmp = sqrt(tmp);
 
     deltaM[i] = tmp;
   }
 
-  //creation de sumDeltaM . a changer l'index une fois le ToDo https://github.com/Leowrin/bikecomputer/projects/1#card-72750098 fait
+  //creation de sumDeltaM.
   for (size_t i = 1; i < csvLen; i++) {
-    sumDeltaM[i] = sumDeltaM[i-1] + deltaM[i-1];
+    sumDeltaM[i] = sumDeltaM[i-1] + deltaM[i];
   }
 
 
 
 
 
-  for (size_t i = 0; i < csvLen - 1; i++) {
-    printf("%f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], pythonFile[i * 3 + 2], deltaH[i], sumDeltaM[i]);
+  for (size_t i = 0; i < csvLen; i++) {
+    printf("%f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * 3 + 2], deltaH[i]);
   }
 
 
