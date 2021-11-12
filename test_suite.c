@@ -36,11 +36,6 @@ bool readCsv(char * filename, double * values, int sizeX, int sizeY) {
     return true;
 }
 
-/*
-double wgsTolv95X {
-
-}
-*/
 
 
 
@@ -68,11 +63,13 @@ int main(int argc, char *argv[]) {
   double * deltaX = calloc((csvLen - 1), sizeof (double));
   double * deltaY = calloc((csvLen - 1), sizeof (double));
 
+  double * deltaM = calloc((csvLen - 1), sizeof (double));
+
   //lecture du fichier et copie dans memoire ^.
   readCsv(filename, pythonFile, 3, csvLen);
 
 
-
+  //variable denivelee positif cumulee (nom a changer)
   double dPos = 0;
 
 
@@ -107,7 +104,6 @@ int main(int argc, char *argv[]) {
     lv95Y[i] += 119.79 * phiP * phiP * phiP;
   }
 
-  //creation d'une variable deltaH
 
 
   //calcul de deltaH entre chaque mesure
@@ -126,7 +122,7 @@ int main(int argc, char *argv[]) {
 
 
 
-
+  //debug des delta X pour enlever les "teleport"
   for (size_t i = 0; i < csvLen - 1; i++) {
     double tmp = fabs(lv95X[i] - lv95X[i + 1]);
 
@@ -138,7 +134,7 @@ int main(int argc, char *argv[]) {
     deltaX[i] = tmp;
   }
 
-
+  //debug de delta Y pour enlever les "teleport"
   for (size_t i = 0; i < csvLen - 1; i++) {
     double tmp = fabs(lv95Y[i] - lv95Y[i + 1]);
 
@@ -156,11 +152,7 @@ int main(int argc, char *argv[]) {
 
 
 
-/*
-  for (size_t i = 0; i < csvLen; i++) {
-    printf("E: %f, N: %f\n", lv95X[i], lv95Y[i]);
-  }
-*/
+
 
   for (size_t i = 0; i < csvLen - 1; i++) {
     printf("%f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], pythonFile[i * 3 + 2]);
