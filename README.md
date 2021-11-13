@@ -29,3 +29,5 @@ https://fr.wikipedia.org/wiki/NMEA_0183#cite_note-SommeDeControleNMEA-4
 
 study on cyclist's work :
 https://link.springer.com/article/10.1007/s12283-017-0234-1
+
+https://www.raspberrypi.com/documentation/computers/remote-access.html
