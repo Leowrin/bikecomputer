@@ -58,21 +58,25 @@ int main(int argc, char *argv[]) {
   double * lv95X = malloc(csvLen * sizeof (double));
   double * lv95Y = malloc(csvLen * sizeof (double));
 
-  double * deltaH = calloc((csvLen), sizeof (double));
+  double * deltaH = calloc(csvLen, sizeof (double));
 
-  double * deltaX = calloc((csvLen), sizeof (double));
-  double * deltaY = calloc((csvLen), sizeof (double));
+  double * deltaX = calloc(csvLen, sizeof (double));
+  double * deltaY = calloc(csvLen, sizeof (double));
 
-  double * deltaM = calloc((csvLen), sizeof (double));
+  double * deltaM = calloc(csvLen, sizeof (double));
 
-  double * sumDeltaM = calloc((csvLen), sizeof (double));
+  double * sumDeltaM = calloc(csvLen, sizeof (double));
+
+  double * workg = calloc(csvLen, sizeof (double));
+
+  double * powerg = malloc(csvLen * sizeof (double));
 
   //lecture du fichier et copie dans memoire ^.
   readCsv(filename, pythonFile, 3, csvLen);
 
 
   //variable denivelee positif cumulee (nom a changer)
-  double dPos = 0;
+  int mass = 90;
 
 
   //copie des points GPS, utile uniquement pour debug et probleme export python
@@ -114,10 +118,18 @@ int main(int argc, char *argv[]) {
     deltaH[i] = pythonFile[i * 3 + 2] - pythonFile[j * 3 + 2];
   }
 
-  //calcul du denivele possitif
-  for (size_t i = 0; i < csvLen - 1; i++) {
+  for (size_t i = 0; i < csvLen; i++) {
     if (deltaH[i] > 0) {
-      dPos += deltaH[i];
+      powerg[i] = mass * 9.81 * deltaH[i];
+    }
+  }
+
+  //calcul du denivele possitif
+  for (size_t i = 1; i < csvLen; i++) {
+    workg[i] = workg[i - 1];
+    if (deltaH[i] > 0) {
+      // /3600 pour wattheure au lieu de joules
+      workg[i] += (mass * 9.81 * deltaH[i]) / 3600;
     }
   }
 
@@ -166,17 +178,11 @@ int main(int argc, char *argv[]) {
 
 
   for (size_t i = 0; i < csvLen; i++) {
-    printf("%f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * 3 + 2], deltaH[i]);
+    printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * 3 + 2], deltaH[i], powerg[i], workg[i]);
   }
 
 
 
-  //calcul du travail en joules, masse * g * H
-  double workg = 0;
-  workg = 90 * 9.81 * dPos;
-
-  //conversion en wattheure.
-  workg /= 3600;
   //printf("%f\n", workg);
 
 
@@ -188,6 +194,9 @@ int main(int argc, char *argv[]) {
   free(deltaX);
   free(deltaY);
   free(deltaM);
+  free(sumDeltaM);
+  free(powerg);
+  free(workg);
 
   return 0;
 }
