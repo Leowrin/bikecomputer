@@ -45,7 +45,7 @@ while count<1000 :
                 lon = float(data[4])/100
                 alt = float(data[9])
 
-
+                ### convertion from minutes" to decimal
                 tmp = lat - math.floor(lat)
                 tmp /= 60
                 lat = math.floor(lat)
