@@ -42,17 +42,17 @@ bool readCsv(char * filename, double * values, int sizeX, int sizeY) {
 
 int main(int argc, char *argv[]) {
   //lecture des arguments lors de l'appel du script
-  if (argc != 3) {
-    printf("err1");
+  if (argc != 4) {
+    printf("errno1");
     return 1;
   }
   char * filename = argv[1];
   int csvLen = atoi(argv[2]);
-
+  int csvWid = atoi(argv[3]);
 
   //creation des tableaux
     //creation du bloc memoire pour les points gps
-  double * pythonFile = malloc(3 * csvLen * sizeof (double));
+  double * pythonFile = malloc(csvWid * csvLen * sizeof (double));
 
   double * wgs84 = malloc(2 * csvLen * sizeof (double));
   double * lv95X = malloc(csvLen * sizeof (double));
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   double * powerg = malloc(csvLen * sizeof (double));
 
   //lecture du fichier et copie dans memoire ^.
-  readCsv(filename, pythonFile, 3, csvLen);
+  readCsv(filename, pythonFile, csvWid, csvLen);
 
 
   //variable denivelee positif cumulee (nom a changer)
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
   //copie des points GPS, utile uniquement pour debug et probleme export python
   for (size_t i = 0; i < csvLen; i++) {
     for (size_t j = 0; j < 2; j++) {
-      wgs84[i * 2 + j] = pythonFile[i * 3 + j];
+      wgs84[i * 2 + j] = pythonFile[i * csvWid + j];
     }
   }
 
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
   //calcul de deltaH entre chaque mesure
   for (size_t i = 1; i < csvLen; i++) {
     int j = i-1;
-    deltaH[i] = pythonFile[i * 3 + 2] - pythonFile[j * 3 + 2];
+    deltaH[i] = pythonFile[i * csvWid + 2] - pythonFile[j * csvWid + 2];
   }
 
   for (size_t i = 0; i < csvLen; i++) {
