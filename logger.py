@@ -4,12 +4,13 @@ import time
 import numpy as np
 import os
 import math
-import smbus
-from bmp280 import BMP280
+import smbus ### RPI only
+from bmp280 import BMP280 ### RPI only
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
+bmp280 = BMP280(i2c_dev=SMBus(1))
 
-coordinates = np.empty((0, 3), dtype=float)
+coordinates = np.empty((0, 4), dtype=float)
 
 filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
 
@@ -58,7 +59,9 @@ while count<1000 :
                 lon = round(lon, 7)
 
 
-                coordinates = np.concatenate((coordinates, [[lat, lon, alt]]), axis=0)
+                pressure = bmp280.get_pressure()
+
+                coordinates = np.concatenate((coordinates, [[lat, lon, alt, pressure]]), axis=0)
                 count+=1
 
         #else :
