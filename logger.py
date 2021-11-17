@@ -4,6 +4,8 @@ import time
 import numpy as np
 import os
 import math
+import smbus
+from bmp280 import BMP280
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 
@@ -41,14 +43,14 @@ while count<1000 :
                 lat = float(data[2])/100
                 lon = float(data[4])/100
                 alt = float(data[9])
-                
-                
+
+
                 tmp = lat - math.floor(lat)
                 tmp /= 60
                 lat = math.floor(lat)
                 lat += tmp*100
                 lat = round(lat, 7)
-                
+
                 tmp = lon - math.floor(lon)
                 tmp /= 60
                 lon = math.floor(lon)
@@ -75,7 +77,7 @@ print("DONE")
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
 # cmd = "./compute_info " + filename + " " + coordinates.shape[0]
 # os.system("./compute_info")
-# 
+#
 # ### debug
 # sleep(3)
 
