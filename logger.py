@@ -4,7 +4,7 @@ import time
 import numpy as np
 import os
 import math
-import smbus ### RPI only
+from smbus import SMBus ### RPI only
 from bmp280 import BMP280 ### RPI only
 
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
@@ -18,6 +18,9 @@ filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
 #def parse_gps(data):
 
 count=0
+
+### debug
+bmp280.get_pressure()
 
 while count<1000 :
 
@@ -78,10 +81,13 @@ np.savetxt(filename, coordinates, fmt='%f', delimiter=',')
 print("DONE")
 
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
-# cmd = "./compute_info " + filename + " " + coordinates.shape[0]
-# os.system("./compute_info")
+cmd = "./gps " + filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > test_gps.csv"
+os.system(cmd)
 #
-# ### debug
-# sleep(3)
+### debug
+time.sleep(1)
+
+os.system("python3 plotter.py")
+
 
 exit()

@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
   double * lv95Y = malloc(csvLen * sizeof (double));
 
   double * deltaH = calloc(csvLen, sizeof (double));
+  double * deltaHPres = calloc(csvLen, sizeof (double));
 
   double * deltaX = calloc(csvLen, sizeof (double));
   double * deltaY = calloc(csvLen, sizeof (double));
@@ -68,8 +69,12 @@ int main(int argc, char *argv[]) {
   double * sumDeltaM = calloc(csvLen, sizeof (double));
 
   double * workg = calloc(csvLen, sizeof (double));
-
   double * powerg = malloc(csvLen * sizeof (double));
+  
+  double * workgPres = calloc(csvLen, sizeof (double));
+  double * powergPres = malloc(csvLen * sizeof (double));
+  
+  
 
   //lecture du fichier et copie dans memoire ^.
   readCsv(filename, pythonFile, csvWid, csvLen);
@@ -112,19 +117,27 @@ int main(int argc, char *argv[]) {
 
 
 
-  //calcul de deltaH entre chaque mesure
+  //calcul de deltaHGPS entre chaque mesure
   for (size_t i = 1; i < csvLen; i++) {
-    int j = i-1;
+    int j = i - 1;
     deltaH[i] = pythonFile[i * csvWid + 2] - pythonFile[j * csvWid + 2];
   }
-
+  
+  //calcul de deltaHPres
+  for (size_t i = 1; i < csvLen; i++) {
+    int j = i - 1;
+    double deltaPres = pythonFile[i * csvWid + 3] - pythonFile[j * csvWid + 3];
+    deltaHPres[i] = deltaPres * 100 / 12;
+  }
+  
+  //calcul de powergGPS positif
   for (size_t i = 0; i < csvLen; i++) {
     if (deltaH[i] > 0) {
       powerg[i] = mass * 9.81 * deltaH[i];
     }
   }
 
-  //calcul du denivele possitif
+  //calcul de workgGPS possitif
   for (size_t i = 1; i < csvLen; i++) {
     workg[i] = workg[i - 1];
     if (deltaH[i] > 0) {
@@ -132,6 +145,22 @@ int main(int argc, char *argv[]) {
       workg[i] += (mass * 9.81 * deltaH[i]) / 3600;
     }
   }
+  
+  //calcul de powergPres positif
+  for (size_t i = 0; i < csvLen; i++) {
+    if (deltaHPres[i] > 0) {
+      powergPres[i] = mass * 9.81 * deltaHPres[i];
+    }
+  }
+
+  //calcul de workgPres possitif
+  for (size_t i = 1; i < csvLen; i++) {
+    workgPres[i] = workgPres[i - 1];
+    if (deltaHPres[i] > 0) {
+      // /3600 pour wattheure au lieu de joules
+      workgPres[i] += (mass * 9.81 * deltaHPres[i]) / 3600;
+    }
+  } 
 
 
 
@@ -178,7 +207,7 @@ int main(int argc, char *argv[]) {
 
 
   for (size_t i = 0; i < csvLen; i++) {
-    printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * 3 + 2], deltaH[i], powerg[i], workg[i]);
+    printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * csvWid + 2], deltaH[i], powerg[i], workg[i], deltaHPres[i], powergPres[i], workgPres[i]);
   }
 
 
@@ -191,12 +220,15 @@ int main(int argc, char *argv[]) {
   free(lv95X);
   free(lv95Y);
   free(deltaH);
+  free(deltaHPres);
   free(deltaX);
   free(deltaY);
   free(deltaM);
   free(sumDeltaM);
   free(powerg);
   free(workg);
+  free(workgPres);
+  free(powergPres);
 
   return 0;
 }
