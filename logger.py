@@ -31,7 +31,7 @@ count=0
 ### debug
 bmp280.get_pressure()
 
-while count<1000 :
+while count<1800 :
 
     try:
         try:
