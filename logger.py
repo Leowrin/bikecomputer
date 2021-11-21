@@ -12,8 +12,17 @@ bmp280 = BMP280(i2c_dev=SMBus(1))
 
 coordinates = np.empty((0, 4), dtype=float)
 
-filename = str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + ".csv"
+folder = "logs/"
+folder += str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + '/'
+filename = "logged_data.csv"
 
+try : 
+    cmd = "mkdir " + folder
+    os.system(cmd)
+    
+except :
+    cmd = "mkdir -p " + folder
+    os.system(cmd)
 
 #def parse_gps(data):
 
@@ -48,7 +57,7 @@ while count<1000 :
                 lon = float(data[4])/100
                 alt = float(data[9])
 
-                ### convertion from minutes" to decimal
+                ### convertion from minutes' to decimal
                 tmp = lat - math.floor(lat)
                 tmp /= 60
                 lat = math.floor(lat)
@@ -77,17 +86,17 @@ while count<1000 :
 ### save en csv
 
 ### %f ou %1.10f ?????????????????????????????????????????????????????????????????????????????????????
-np.savetxt(filename, coordinates, fmt='%f', delimiter=',')
+np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
 print("DONE")
 
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
-cmd = "./gps " + filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > test_gps.csv"
+cmd = "./gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > " + folder + "computed_data.csv"
 os.system(cmd)
 #
 ### debug
 time.sleep(1)
 
-os.system("python3 plotter.py")
+os.system("python3 plotter.py " + folder)
 
 
 exit()
