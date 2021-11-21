@@ -1,3 +1,14 @@
+Installation :
+make sure to have these installed on your Raspberry Pi :
+  - numpy
+  - matplotlib
+  - python3-gi-cairo
+
+
+
+
+
+
 # bikecomputer
 Idée de base :
   logger :
