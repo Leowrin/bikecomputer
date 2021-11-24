@@ -16,10 +16,10 @@ folder = "logs/"
 folder += str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + '/'
 filename = "logged_data.csv"
 
-try : 
+try :
     cmd = "mkdir " + folder
     os.system(cmd)
-    
+
 except :
     cmd = "mkdir -p " + folder
     os.system(cmd)
@@ -70,11 +70,14 @@ while count<1800 :
                 lon += tmp*100
                 lon = round(lon, 7)
 
+            elif :
+                ##### A ENVOYER si pas de signal GPS
 
-                pressure = bmp280.get_pressure()
 
-                coordinates = np.concatenate((coordinates, [[lat, lon, alt, pressure]]), axis=0)
-                count+=1
+            pressure = bmp280.get_pressure() ### envoie donnees pression meme sans GPS
+
+            coordinates = np.concatenate((coordinates, [[lat, lon, alt, pressure]]), axis=0)
+            count+=1
 
         #else :
         #    print("no GPS signal or no GPGGA serial input")
