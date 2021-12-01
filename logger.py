@@ -51,7 +51,7 @@ while count<1800 :
             except :
                 satellites = 0
 
-            ### précision vs sample rate, tmp>0 pour toutes valeurs, satellites > 3 pour précision max
+            ### précision vs sample rate, tmp>0 pour toutes valeurs, satellites > 3 pour précision
             if satellites>3 :
                 lat = float(data[2])/100
                 lon = float(data[4])/100
@@ -70,9 +70,10 @@ while count<1800 :
                 lon += tmp*100
                 lon = round(lon, 7)
 
-            elif :
+            """else :
                 ##### A ENVOYER si pas de signal GPS
-
+                lat = None
+                lon = 0"""
 
             pressure = bmp280.get_pressure() ### envoie donnees pression meme sans GPS
 
