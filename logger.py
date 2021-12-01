@@ -10,6 +10,9 @@ from bmp280 import BMP280 ### RPI only
 ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1) ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
 bmp280 = BMP280(i2c_dev=SMBus(1))
 
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(36, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
 coordinates = np.empty((0, 4), dtype=float)
 
 folder = "logs/"
@@ -26,12 +29,15 @@ except :
 
 #def parse_gps(data):
 
-count=0
+count = 0
+lat = 0.0
+lon = 0.0
+alt = 0.0
 
 ### debug
 bmp280.get_pressure()
 
-while count<1800 :
+while count<10 :
 
     try:
         try:
@@ -87,16 +93,15 @@ while count<1800 :
 
         #terminer python et lancer C
         break
+    
 ### save en csv
-
-### %f ou %1.10f ?????????????????????????????????????????????????????????????????????????????????????
 np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
 print("DONE")
 
 ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
 cmd = "./gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > " + folder + "computed_data.csv"
 os.system(cmd)
-#
+
 ### debug
 time.sleep(1)
 
