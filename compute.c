@@ -76,11 +76,11 @@ int main(int argc, char *argv[]) {
   
   
 
-  //lecture du fichier et copie dans memoire ^.
+  //lecture du fichier et copie dans memoire.
   readCsv(filename, pythonFile, csvWid, csvLen);
 
 
-  //variable denivelee positif cumulee (nom a changer)
+  //variable denivelee positif cumulee
   int mass = 90;
 
 
