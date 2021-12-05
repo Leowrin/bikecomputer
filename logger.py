@@ -30,7 +30,7 @@ def terminate(folder, filename, coordinates):
         time.sleep(1)
 
         os.system("python3 plotter.py " + folder)
-        
+
         ser.close()
 
         return 1
@@ -56,8 +56,14 @@ while 1 :
     while GPIO.input(button) == 0 :
         stateB = 1
         text = None
-        
+
         if stateA == 0 :
+            ### debug
+            bmp280.get_pressure()
+            lat = 0.0
+            lon = 0.0
+            alt = 0.0
+            
             coordinates = np.empty((0, 4), dtype=float)
 
             folder = "logs/"
@@ -75,16 +81,16 @@ while 1 :
                 except :
                     pass
             stateA = 1
-        
+
         try:
             ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1.1)
         except:
             print("erreur init com serial0")
-            
+
         try:
             text = ser.readline()
             text = str(text)
-                
+
         except:
             print("failed to read GPS")
             text = None
@@ -131,6 +137,5 @@ while 1 :
     if stateB == 1 :
         terminate(folder, filename, coordinates)
         stateB = 0
-        
-    stateA = 0
 
+    stateA = 0

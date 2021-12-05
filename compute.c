@@ -60,7 +60,6 @@ double Fslope(double m, double g, double h){
 
 
 
-
 int main(int argc, char *argv[]) {
 
   int mass = 80;
@@ -103,13 +102,14 @@ int main(int argc, char *argv[]) {
   double * powergPres = malloc(csvLen * sizeof (double));
 
 
+  double * rollingForce = calloc(csvLen, sizeof (double));
+  double * airResistance = calloc(csvLen, sizeof (double));
+  double * 
+
+
 
   //lecture du fichier et copie dans memoire.
   readCsv(filename, pythonFile, csvWid, csvLen);
-
-
-  //variable denivelee positif cumulee
-
 
 
   //copie des points GPS, utile uniquement pour debug et probleme export python
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
   }
 
 
-  //creation des coo lv95 N et E
+  //creation des coo lv95 N (y) et E (x)
   for (size_t i = 0; i < csvLen; i++) {
     //axe X selon LV95
     double phi = wgs84[i * 2]*3600;
@@ -145,11 +145,12 @@ int main(int argc, char *argv[]) {
 
 
 
-  //calcul de deltaHGPS entre chaque mesure
+  //calcul de deltaHGPS entre chaque mesure, pas utile, juste pour data
   for (size_t i = 1; i < csvLen; i++) {
     int j = i - 1;
     deltaH[i] = pythonFile[i * csvWid + 2] - pythonFile[j * csvWid + 2];
   }
+
 
   //calcul de deltaHPres
   for (size_t i = 1; i < csvLen; i++) {
@@ -158,14 +159,16 @@ int main(int argc, char *argv[]) {
     deltaHPres[i] = deltaPres * 100 / 12;
   }
 
-  //calcul de powergGPS positif
+
+  //calcul de powergGPS positif, pas utile, data
   for (size_t i = 0; i < csvLen; i++) {
     if (deltaH[i] > 0) {
       powerg[i] = mass * 9.81 * deltaH[i];
     }
   }
 
-  //calcul de workgGPS possitif
+
+  //calcul de workgGPS possitif, a remplacer par F -------------------------------------------------------------------------------
   for (size_t i = 1; i < csvLen; i++) {
     workg[i] = workg[i - 1];
     if (deltaH[i] > 0) {
@@ -174,14 +177,15 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  //calcul de powergPres positif
+
+  //calcul de powergPres positif, a remplacer par F ------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
     if (deltaHPres[i] > 0) {
       powergPres[i] = mass * 9.81 * deltaHPres[i];
     }
   }
 
-  //calcul de workgPres possitif
+  //calcul de workgPres possitif, a remplacer par Sigma F/n*v --------------------------------------------------------------------
   for (size_t i = 1; i < csvLen; i++) {
     workgPres[i] = workgPres[i - 1];
     if (deltaHPres[i] > 0) {
@@ -197,7 +201,7 @@ int main(int argc, char *argv[]) {
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = lv95X[i] - lv95X[i - 1];
 
-    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data
+    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data, a retirer ? -------------------------------????
     if (fabs(tmp) > 20 || fabs(tmp) < 0.4) {
       tmp = 0;
     }
@@ -209,7 +213,7 @@ int main(int argc, char *argv[]) {
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = lv95Y[i] - lv95Y[i + 1];
 
-    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data
+    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data, a retirer ? -------------------------------????
     if (fabs(tmp) > 20 || fabs(tmp) < 0.4) {
       tmp = 0;
     }
@@ -217,7 +221,7 @@ int main(int argc, char *argv[]) {
     deltaY[i] = tmp;
   }
 
-  //creation de deltaM
+  //creation de deltaM, a renomer en deltaPos-----------------------------------------------------------------------------
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = deltaX[i] * deltaX[i] + deltaY[i] * deltaY[i];
     tmp = sqrt(tmp);
@@ -225,7 +229,7 @@ int main(int argc, char *argv[]) {
     deltaM[i] = tmp;
   }
 
-  //creation de sumDeltaM.
+  //creation de sumDeltaM. a renomer en distance ----------------------------------------------------------------------------------
   for (size_t i = 1; i < csvLen; i++) {
     sumDeltaM[i] = sumDeltaM[i-1] + deltaM[i];
   }
@@ -233,7 +237,7 @@ int main(int argc, char *argv[]) {
 
 
 
-
+  // à remplacer par un proper fprintf ?-----------------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
     printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * csvWid + 2], deltaH[i], powerg[i], workg[i], deltaHPres[i], powergPres[i], workgPres[i]);
   }
