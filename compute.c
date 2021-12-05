@@ -37,7 +37,7 @@ bool readCsv(char * filename, double * values, int sizeX, int sizeY) {
 }
 
 
-
+//constant
 double Froll(float cr, float m, float g){
   return cr * m * g;
 }
@@ -48,8 +48,8 @@ double Fwind(float r, float cwA, float ws){
 }
 
 
-double Fslope(double m, double g, double h){
-  return m * g * h;
+double potentialEnergy(double m, double g, double dh){
+  return m * g * dh;
 }
 
 
@@ -63,9 +63,11 @@ double Fslope(double m, double g, double h){
 int main(int argc, char *argv[]) {
 
   int mass = 80;
-  double cr = 0.003
-  float g = 9.81
-  float n = 0.94
+  double cr = 0.003;
+  float g = 9.81;
+  float n = 0.94;
+  float cwA = 0.39;
+  float r = 1.2;
 
 
   //lecture des arguments lors de l'appel du script
@@ -85,27 +87,31 @@ int main(int argc, char *argv[]) {
   double * lv95X = malloc(csvLen * sizeof (double));
   double * lv95Y = malloc(csvLen * sizeof (double));
 
-  double * deltaH = calloc(csvLen, sizeof (double));
+  double * deltaHGPS = calloc(csvLen, sizeof (double));
   double * deltaHPres = calloc(csvLen, sizeof (double));
 
   double * deltaX = calloc(csvLen, sizeof (double));
   double * deltaY = calloc(csvLen, sizeof (double));
 
-  double * deltaM = calloc(csvLen, sizeof (double));
+  double * deltaPos = calloc(csvLen, sizeof (double));
 
-  double * sumDeltaM = calloc(csvLen, sizeof (double));
+  double * distance = calloc(csvLen, sizeof (double));
 
-  double * workg = calloc(csvLen, sizeof (double));
-  double * powerg = malloc(csvLen * sizeof (double));
+  double * workgGPS = calloc(csvLen, sizeof (double));
+  double * powergGPS = malloc(csvLen * sizeof (double));
 
   double * workgPres = calloc(csvLen, sizeof (double));
   double * powergPres = malloc(csvLen * sizeof (double));
 
 
-  double * rollingForce = calloc(csvLen, sizeof (double));
   double * airResistance = calloc(csvLen, sizeof (double));
-  double * 
 
+  //double * slopeForce = calloc(csvLen, sizeof (double));
+
+  double * totalForce = calloc(csvLen, sizeof (double));
+
+  double * power = calloc(csvLen, sizeof (double));
+  double * sumEnergy = calloc(csvLen, sizeof (double));
 
 
   //lecture du fichier et copie dans memoire.
@@ -148,7 +154,7 @@ int main(int argc, char *argv[]) {
   //calcul de deltaHGPS entre chaque mesure, pas utile, juste pour data
   for (size_t i = 1; i < csvLen; i++) {
     int j = i - 1;
-    deltaH[i] = pythonFile[i * csvWid + 2] - pythonFile[j * csvWid + 2];
+    deltaHGPS[i] = pythonFile[i * csvWid + 2] - pythonFile[j * csvWid + 2];
   }
 
 
@@ -162,18 +168,18 @@ int main(int argc, char *argv[]) {
 
   //calcul de powergGPS positif, pas utile, data
   for (size_t i = 0; i < csvLen; i++) {
-    if (deltaH[i] > 0) {
-      powerg[i] = mass * 9.81 * deltaH[i];
+    if (deltaHGPS[i] > 0) {
+      powergGPS[i] = mass * 9.81 * deltaHGPS[i];
     }
   }
 
 
   //calcul de workgGPS possitif, a remplacer par F -------------------------------------------------------------------------------
   for (size_t i = 1; i < csvLen; i++) {
-    workg[i] = workg[i - 1];
-    if (deltaH[i] > 0) {
+    workgGPS[i] = workgGPS[i - 1];
+    if (deltaHGPS[i] > 0) {
       // /3600 pour wattheure au lieu de joules
-      workg[i] += (mass * 9.81 * deltaH[i]) / 3600;
+      workgGPS[i] += (mass * 9.81 * deltaHGPS[i]) / 3600;
     }
   }
 
@@ -193,9 +199,6 @@ int main(int argc, char *argv[]) {
       workgPres[i] += (mass * 9.81 * deltaHPres[i]) / 3600;
     }
   }
-
-
-
 
   // creation delta X et debug pour enlever les "teleport"
   for (size_t i = 1; i < csvLen; i++) {
@@ -221,48 +224,85 @@ int main(int argc, char *argv[]) {
     deltaY[i] = tmp;
   }
 
-  //creation de deltaM, a renomer en deltaPos-----------------------------------------------------------------------------
+  //creation de deltaPos
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = deltaX[i] * deltaX[i] + deltaY[i] * deltaY[i];
     tmp = sqrt(tmp);
 
-    deltaM[i] = tmp;
+    deltaPos[i] = tmp;
   }
 
-  //creation de sumDeltaM. a renomer en distance ----------------------------------------------------------------------------------
+  //creation de distance.
   for (size_t i = 1; i < csvLen; i++) {
-    sumDeltaM[i] = sumDeltaM[i-1] + deltaM[i];
+    distance[i] = distance[i-1] + deltaPos[i];
   }
 
 
 
+  //force de l'airResistance
+  for (size_t i = 1; i < csvLen; i++) {
+    airResistance[i] = Fwind(r, cwA, deltaPos[i]);
+  }
+
+/*
+  //force slope
+  for (size_t i = 1; i < csvLen; i++) {
+    if (deltaPos[i] != 0){
+      slopeForce[i] = slopeForce(m, g, deltaHPres[i], deltaPos[i]);
+    }
+  }
+*/
+
+  //totalForce
+  for (size_t i = 1; i < csvLen; i++) {
+    totalForce[i] = (airResistance[i] + Froll(cr, mass, g)) / n;
+  }
+
+
+  for (size_t i = 1; i < csvLen; i++) {
+    power[i] = totalForce[i] * deltaPos[i];
+    power[i] += potentialEnergy(mass, g, deltaHPres[i]);
+
+  }
+
+
+  for (size_t i = 1; i < csvLen; i++) {
+    sumEnergy[i] += sumEnergy[i - 1];
+    if (0 < power[i]) {
+      sumEnergy[i] += power[i] / 3600;
+    }
+    sumEnergy[i] -= 0.004 / 90 * mass;
+  }
 
   // à remplacer par un proper fprintf ?-----------------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
-    printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaM[i], sumDeltaM[i], pythonFile[i * csvWid + 2], deltaH[i], powerg[i], workg[i], deltaHPres[i], powergPres[i], workgPres[i]);
+    printf("%f, %f, %f, %f, %f, %f, %f, ", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaPos[i], distance[i], pythonFile[i * csvWid + 2]);
+    printf("%f, %f, %f, %f, %f, %f, %f, %f\n", deltaHGPS[i], powergGPS[i], workgGPS[i], deltaHPres[i], powergPres[i], workgPres[i], power[i], sumEnergy[i]);
   }
 
 
 
 
 
-  //printf("%f\n", workg);
+  //printf("%f\n", workgGPS);
 
 
   free(pythonFile);
   free(wgs84);
   free(lv95X);
   free(lv95Y);
-  free(deltaH);
+  free(deltaHGPS);
   free(deltaHPres);
   free(deltaX);
   free(deltaY);
-  free(deltaM);
-  free(sumDeltaM);
-  free(powerg);
-  free(workg);
+  free(deltaPos);
+  free(distance);
+  free(powergGPS);
+  free(workgGPS);
   free(workgPres);
   free(powergPres);
+  free(power);
+  free(sumEnergy);
 
   return 0;
 }
