@@ -301,6 +301,8 @@ int main(int argc, char *argv[]) {
   free(workgGPS);
   free(workgPres);
   free(powergPres);
+  free(airResistance);
+  free(totalForce);
   free(power);
   free(sumEnergy);
 
