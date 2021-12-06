@@ -13,14 +13,16 @@ file = np.genfromtxt(folder+filename, delimiter = ', ', dtype = None)
 csvLen = file.shape[0]
 
 
-### power - energy, gps vs bmp280
+### power - energy, gps vs bmp280 vs bmp280 corrige
 fig, (p1, p2) = plt.subplots(2)
 
 p1.plot(np.arange(0,csvLen), file[:, 8], label="gps")
 p1.plot(np.arange(0,csvLen), file[:, 11], label="bmp280")
+p1.plot(np.arange(0,csvLen), file[:, 13], label="corrected_bmp280")
 
 p2.plot(np.arange(0,csvLen), file[:, 9])
 p2.plot(np.arange(0,csvLen), file[:, 12])
+p2.plot(np.arange(0,csvLen), file[:, 14], label="total energy (height+resistance)")
 
 plt.xlabel("time [s]")
 
