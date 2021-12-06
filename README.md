@@ -5,6 +5,8 @@ Les forces exercées par le cycliste prennet en compte la resistance de l'air et
 https://www.sheldonbrown.com/rinard/aero/formulas.html
 
 J'ai également réalisé un modèle interactif sur GeoGebra :
+https://www.geogebra.org/calculator/nxqevdnj
+
 
 ## structure :
 Le processus `main.py` tourne en boucle, dès que le GPIO no 13 est connecté au GND, l'enregistrement des données commence. Il s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données dans `bikecomputer/logs/date`, format YYYY_MM_DD_HH_minutes. 
