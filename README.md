@@ -5,7 +5,7 @@ Les forces exercées par le cycliste prennet en compte la resistance de l'air et
 https://www.sheldonbrown.com/rinard/aero/formulas.html
 
 J'ai également réalisé un modèle interactif sur GeoGebra :
-https://www.geogebra.org/calculator/nxqevdnj
+https://www.geogebra.org/m/nxqevdnj
 
 
 ## structure :
