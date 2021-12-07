@@ -8,7 +8,7 @@ J'ai également réalisé un modèle interactif sur GeoGebra :
 https://www.geogebra.org/m/nxqevdnj
 
 
-## structure :
+## Structure :
 Le processus `main.py` tourne en boucle, dès que le GPIO no 13 est connecté au GND, l'enregistrement des données commence. Il s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données dans `bikecomputer/logs/date`, format YYYY_MM_DD_HH_minutes. 
 
 
@@ -33,7 +33,7 @@ puis ajouter en bas de page, en remplacant <path> par le chemin d'accès au doss
 
 
 
-### page of interest :
+### Ressources :
 
 https://www.u-blox.com/sites/default/files/products/documents/NEO-6_DataSheet_(GPS.G6-HW-09005).pdf
 https://www.openimpulse.com/blog/wp-content/uploads/wpsc/downloadables/GY-NEO6MV2-GPS-Module-Datasheet.pdf
