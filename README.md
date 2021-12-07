@@ -47,3 +47,5 @@ study on cyclist's work :
 https://link.springer.com/article/10.1007/s12283-017-0234-1
 
 https://www.raspberrypi.com/documentation/computers/remote-access.html
+  
+https://docs.python-guide.org/writing/structure/
