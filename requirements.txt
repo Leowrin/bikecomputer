@@ -1,0 +1,4 @@
+bmp280
+numpy
+matplotlib
+RPi.GPIO
