@@ -19,8 +19,7 @@ les librairies suivantes sont nécéssaire pour Python3 :
   - matplotlib `pip3`
   - python3-gi-cairo `pip3`
 
-Une fois les librairies instalées, le script `compute.c` doit être compilé. 
-Pour se faire, une fois dans le dossier bikecomputer, effectuer la commande `Make`.
+Une fois les librairies instalées, le code `compute.c` doit être compilé en un script nommé `gps`.
 
 Pour que le processus tourne à chaque démarrage du RaspberryPi, une méthode possible et d'ajouter `main.py` aux cronjobs, pour se faire,
 dans le terminal :
