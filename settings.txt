@@ -1,3 +1,6 @@
+#cyclist's mass in kg
+mass=80
+
 #gpio pins are numbered following BOARD numbering
 recordSwitch_gpio=36
 
