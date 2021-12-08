@@ -34,9 +34,9 @@ p1.legend()
 p1.grid()
 p2.grid()
 
-plt.savefig(folder + "energy_comparison.svg", dpi=150)
-plt.show()
-
+plt.savefig(folder + "energy_comparison.svg", format="svg", dpi=1200)
+### plt.show()
+plt.clf()
 
 
 ### deviation from reference point
@@ -48,9 +48,9 @@ plt.ylabel("Deviation relative to reference point, axis N [m]")
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid()
 
-plt.savefig(folder + "gps_deviation.svg", dpi=150)
-plt.show()
-
+plt.savefig(folder + "gps_deviation.svg", format="svg", dpi=1200)
+### plt.show()
+plt.clf()
 
 
 ### deltaH from gps and bmp280
@@ -71,5 +71,6 @@ plt.grid()
 plt.xlabel("Time [s]")
 plt.ylabel("Altitude variation from reference point [m]")
 plt.legend()
-plt.savefig(folder + "deltaH.svg", dpi=150)
-plt.show()
+plt.savefig(folder + "deltaH.svg", format="svg", dpi=1200)
+### plt.show()
+plt.clf()

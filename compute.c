@@ -126,6 +126,54 @@ int main(int argc, char *argv[]) {
   }
 
 
+  for (size_t i = 0; i < csvLen; i++){
+    //int tmpA = i;
+    double tmpX;
+    double tmpY;
+    double tmpH;
+    if (wgs84[i * 2] == 0){
+      int j = i;
+      while (wgs84[j * 2] == 0) {
+        j++;
+        if (j == csvLen){
+          break;
+        }
+        if (wgs84[j * 2] != 0) {
+          tmpX = wgs84[j * 2];
+          tmpY = wgs84[j * 2 + 1];
+          tmpH = pythonFile[j * csvWid + 2];
+          for (size_t k = i; k < j; k++) {
+            wgs84[i * 2] = tmpX;
+            wgs84[i * 2 + 1] = tmpY;
+            pythonFile[i * csvWid + 2] = tmpH;
+          }
+        }
+      }
+    }
+  }
+  if ( wgs84[(csvLen - 1) * 2] == 0 ){
+    if ( wgs84[0] == 0 ) {
+    }
+    else {
+      for (size_t i = csvLen - 1; i > 0; i--) {
+        if (wgs84[i * 2] != 0){
+          double tmpX = wgs84[i * 2];
+          double tmpY = wgs84[i * 2 + 1];
+          double tmpH = pythonFile[i * csvWid + 2];
+          for (size_t k = i + 1; k < csvLen; k++) {
+            wgs84[2 * k] = tmpX;
+            wgs84[2 * k + 1] = tmpY;
+            pythonFile[k * csvWid + 2] = tmpH;
+          }
+          break;
+        }
+      }
+    }
+  }
+      
+
+
+
   //creation des coo lv95 N (y) et E (x)
   for (size_t i = 0; i < csvLen; i++) {
     //axe X selon LV95
@@ -148,6 +196,9 @@ int main(int argc, char *argv[]) {
     lv95Y[i] -= 194.56 * lambdaP * lambdaP * phiP;
     lv95Y[i] += 119.79 * phiP * phiP * phiP;
   }
+
+
+ 
 
 
 
@@ -184,12 +235,19 @@ int main(int argc, char *argv[]) {
   }
 
 
+
+
+
+
   //calcul de powergPres positif, a remplacer par F ------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
     if (deltaHPres[i] > 0) {
       powergPres[i] = mass * 9.81 * deltaHPres[i];
     }
   }
+
+
+
 
   //calcul de workgPres possitif, a remplacer par Sigma F/n*v --------------------------------------------------------------------
   for (size_t i = 1; i < csvLen; i++) {
@@ -199,6 +257,13 @@ int main(int argc, char *argv[]) {
       workgPres[i] += (mass * 9.81 * deltaHPres[i]) / 3600;
     }
   }
+
+
+
+
+
+
+
 
   // creation delta X et debug pour enlever les "teleport"
   for (size_t i = 1; i < csvLen; i++) {
@@ -212,6 +277,10 @@ int main(int argc, char *argv[]) {
     deltaX[i] = tmp;
   }
 
+
+
+
+
   // creation delta Y et debug pour enlever les "teleport"
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = lv95Y[i] - lv95Y[i + 1];
@@ -223,6 +292,9 @@ int main(int argc, char *argv[]) {
 
     deltaY[i] = tmp;
   }
+
+
+
 
   //creation de deltaPos
   for (size_t i = 1; i < csvLen; i++) {
@@ -271,7 +343,9 @@ int main(int argc, char *argv[]) {
     if (0 < power[i]) {
       sumEnergy[i] += power[i] / 3600;
     }
-    sumEnergy[i] -= 0.004 / 90 * mass;
+    if (sumEnergy[i] > 0){
+      sumEnergy[i] -= 0.004 / 90 * mass;
+    }
   }
 
   // à remplacer par un proper fprintf ?-----------------------------------------------------------------------------------------

@@ -13,14 +13,20 @@ bmp280 = BMP280(i2c_dev=SMBus(1))
 GPIO.setmode(GPIO.BOARD)
 
 button = 36
+led = 40
 
+### setup les pin pour le record switch et la led temoin
 GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(led, GPIO.OUT)
 
+### necessaire pour reset le read buffer
+ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
+ser.close()
 
 def terminate(folder, filename, coordinates):
     try :
         np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
-        print("DONE")
+        ### print("DONE")
 
         ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
         cmd = "./gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > " + folder + "computed_data.csv"
@@ -64,6 +70,9 @@ while 1 :
             lon = 0.0
             alt = 0.0
             
+            ### start LED temoin
+            GPIO.output(led, GPIO.HIGH)
+            
             coordinates = np.empty((0, 4), dtype=float)
 
             folder = "logs/"
@@ -83,7 +92,7 @@ while 1 :
             stateA = 1
 
         try:
-            ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1.1)
+            ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
         except:
             print("erreur init com serial0")
 
@@ -107,14 +116,18 @@ while 1 :
 
 
         if text.split(",")[0] == "$GPGGA" or text.split(",")[0] == "b'$GPGGA" :
-            print(text)
+            ### print(text)
             data = text.split(",")
         ### précision vs sample rate, tmp>0 pour toutes valeurs, satellites > 3 pour précision
             if satellites>3 :
-                lat = float(data[2])/100
-                lon = float(data[4])/100
-                alt = float(data[9])
-
+                try:
+                    lat = float(data[2])/100
+                    lon = float(data[4])/100
+                    alt = float(data[9])
+                except:
+                    lat = 0
+                    lon = 0
+                    alt = 0
                 ### convertion from minutes' to decimal
                 tmp = lat - math.floor(lat)
                 tmp /= 60
@@ -137,5 +150,7 @@ while 1 :
     if stateB == 1 :
         terminate(folder, filename, coordinates)
         stateB = 0
+        count = 0
+        GPIO.output(led, GPIO.LOW)
 
     stateA = 0
