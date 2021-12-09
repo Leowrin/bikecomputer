@@ -74,3 +74,9 @@ plt.legend()
 plt.savefig(folder + "deltaH.svg", format="svg", dpi=1200)
 ### plt.show()
 plt.clf()
+
+
+###
+plt.plot(np.arange(0,csvLen), file[:,15], label="altimetry")
+plt.savefig(folder + "altimetry.svg", format="svg")
+plt.clf()

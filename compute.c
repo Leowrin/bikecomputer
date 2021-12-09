@@ -89,6 +89,7 @@ int main(int argc, char *argv[]) {
 
   double * deltaHGPS = calloc(csvLen, sizeof (double));
   double * deltaHPres = calloc(csvLen, sizeof (double));
+  double * altimetry = malloc(csvLen * sizeof (double));
 
   double * deltaX = calloc(csvLen, sizeof (double));
   double * deltaY = calloc(csvLen, sizeof (double));
@@ -212,10 +213,15 @@ int main(int argc, char *argv[]) {
   //calcul de deltaHPres
   for (size_t i = 1; i < csvLen; i++) {
     int j = i - 1;
-    double deltaPres = pythonFile[i * csvWid + 3] - pythonFile[j * csvWid + 3];
+    double deltaPres = pythonFile[j * csvWid + 3] - pythonFile[i * csvWid + 3];
     deltaHPres[i] = deltaPres * 100 / 12;
   }
-
+  
+  altimetry[0] = 0;
+  for (size_t i = 1; i < csvLen; i++) {
+    double deltaPres = pythonFile[0 * csvWid + 3] - pythonFile[i * csvWid + 3];
+    altimetry[i] = deltaPres * 100 / 12;
+  }
 
   //calcul de powergGPS positif, pas utile, data
   for (size_t i = 0; i < csvLen; i++) {
@@ -351,7 +357,7 @@ int main(int argc, char *argv[]) {
   // à remplacer par un proper fprintf ?-----------------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
     printf("%f, %f, %f, %f, %f, %f, %f, ", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaPos[i], distance[i], pythonFile[i * csvWid + 2]);
-    printf("%f, %f, %f, %f, %f, %f, %f, %f\n", deltaHGPS[i], powergGPS[i], workgGPS[i], deltaHPres[i], powergPres[i], workgPres[i], power[i], sumEnergy[i]);
+    printf("%f, %f, %f, %f, %f, %f, %f, %f, %f\n", deltaHGPS[i], powergGPS[i], workgGPS[i], deltaHPres[i], powergPres[i], workgPres[i], power[i], sumEnergy[i], altimetry[i]);
   }
 
 
@@ -367,6 +373,7 @@ int main(int argc, char *argv[]) {
   free(lv95Y);
   free(deltaHGPS);
   free(deltaHPres);
+  free(altimetry);
   free(deltaX);
   free(deltaY);
   free(deltaPos);

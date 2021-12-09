@@ -25,17 +25,18 @@ ser.close()
 
 def terminate(folder, filename, coordinates):
     try :
+        print(folder+filename)
         np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
         ### print("DONE")
 
         ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
-        cmd = "./gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > " + folder + "computed_data.csv"
+        cmd = "/home/pi/bikecomputer/gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > " + folder + "computed_data.csv"
         os.system(cmd)
 
         ### debug
         time.sleep(1)
 
-        os.system("python3 plotter.py " + folder)
+        os.system("python3 /home/pi/bikecomputer/plotter.py " + folder)
 
         ser.close()
 
@@ -75,7 +76,7 @@ while 1 :
             
             coordinates = np.empty((0, 4), dtype=float)
 
-            folder = "logs/"
+            folder = "/home/pi/bikecomputer/logs/"
             folder += str(time.strftime("%Y_%m_%d_%H_%M", time.localtime())) + '/'
             filename = "logged_data.csv"
 
