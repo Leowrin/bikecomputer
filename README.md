@@ -4,6 +4,7 @@ Ce code permet, à l'aide d'un module gps de type Neo 6M et d'un capteur barrom�
 ## Structure :
 Le processus `main.py` tourne en boucle, dès que le GPIO no 13 est connecté au GND, l'enregistrement des données commence. Il s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données dans `bikecomputer/logs/date`, format YYYY_MM_DD_HH_minutes. 
 
+Plus de détails sont disponible dans le [wiki](https://github.com/Leowrin/bikecomputer/wiki#principe-g%C3%A9n%C3%A9ral)
 
 ## Installation :
 pour installet les paquets; `xargs sudo apt install < packages.txt`
