@@ -1,16 +1,10 @@
 # bikecomputer
 Ce code permet, à l'aide d'un module gps de type Neo 6M et d'un capteur barrométrique bmp280, d'enregistrer les coordonnées GPS et le dénivelé realisé lors d'un parcours en vélo. Ces données sont ensuite traitées pour calculer la puissance dévelopée par la personne en chaque instant, ainsi que l'énergie dépensée sur le parcours.
 
-Les forces exercées par le cycliste prennet en compte la resistance de l'air et les frottement des roues, le modèle est inspiré de ce documet :
-https://www.sheldonbrown.com/rinard/aero/formulas.html
-
-J'ai également réalisé un modèle interactif sur GeoGebra :
-https://www.geogebra.org/m/nxqevdnj
-
-
 ## Structure :
 Le processus `main.py` tourne en boucle, dès que le GPIO no 13 est connecté au GND, l'enregistrement des données commence. Il s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données dans `bikecomputer/logs/date`, format YYYY_MM_DD_HH_minutes. 
 
+Plus de détails sont disponible dans le [wiki](https://github.com/Leowrin/bikecomputer/wiki#principe-g%C3%A9n%C3%A9ral)
 
 ## Installation :
 pour installet les paquets; `xargs sudo apt install < packages.txt`
@@ -29,13 +23,15 @@ Le détail de chaque paquet est disponible sur le wiki.
 
 Une fois les librairies instalées, le code `compute.c` doit être compilé en un script nommé `gps`.
 
-Pour que le processus tourne à chaque démarrage du RaspberryPi, une méthode possible et d'ajouter `main.py` aux cronjobs, pour se faire,
+Pour que le processus tourne à chaque démarrage du RaspberryPi, une méthode possible est d'ajouter `main.py` aux cronjobs, pour se faire,
 dans le terminal :
 `crontab -e`
-puis ajouter en bas de page, en remplacant <path> par le chemin d'accès au dossier :
+puis ajouter en bas de page, en remplacant <path> par le chemin d'accès au dossier (recommandé: `/home/pi/` :
 `@reboot python3 <path>/bikecomputer/main.py`
   
   connecter le GPIO 13 à GND pour lancer l'enregistrement et le calcul des forces.
+  
+  déconnecter le GPIO du GND pour terminer l'enregistrement et créer les graphs sur les résultats
 
 
 
