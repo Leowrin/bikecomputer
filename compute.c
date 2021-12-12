@@ -261,6 +261,7 @@ int main(int argc, char *argv[]) {
     if (deltaHPres[i] > 0) {
       // /3600 pour wattheure au lieu de joules
       workgPres[i] += (mass * 9.81 * deltaHPres[i]) / 3600;
+      workgPres[i] -= 0.004 / 90 * mass;
     }
   }
 
