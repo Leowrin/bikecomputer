@@ -14,14 +14,8 @@ Cloner ou télécharger cette page dans `/home/pi/`, renommer `bikecomputer-main
 -pour installer les librairies python3; `sudo pip3 install requirements.txt`
 
 La liste des paquets est dans le fichier `packages.txt`, celle des librairies dans `requirements.txt`,
-Le détail de chaque paquet est disponible sur le wiki.
 
 
-<!----les librairies suivantes sont nécéssaire pour Python3 :
-  - bmp280 `pip3`
-  - numpy `pip3`
-  - matplotlib `pip3`
-  - python3-gi-cairo `pip3`---->
 
 Une fois les librairies instalées, le code `compute.c` doit être compilé en un script nommé `gps`.
 
