@@ -2,7 +2,7 @@
 Ce code permet, à l'aide d'un module gps de type Neo 6M et d'un capteur barrométrique bmp280, d'enregistrer les coordonnées GPS et le dénivelé realisé lors d'un parcours en vélo. Ces données sont ensuite traitées pour calculer la puissance dévelopée par la personne en chaque instant, ainsi que l'énergie dépensée sur le parcours.
 
 ## Structure :
-Le processus `main.py` tourne en boucle, dès que le GPIO no 13 est connecté au GND, l'enregistrement des données commence. Il s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données dans `bikecomputer/logs/<date>`, format YYYY_MM_DD_HH_minutes. 
+Le processus `main.py` tourne en boucle, dès que le GPIO 13 (board no°36) est connecté au GND, l'enregistrement des données commence. Il s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données (fichiers .csv et graphs) dans `bikecomputer/logs/<date>/`, format YYYY_MM_DD_HH_minutes. 
 
 Plus de détails sont disponible dans le [wiki](https://github.com/Leowrin/bikecomputer/wiki#principe-g%C3%A9n%C3%A9ral)
 
