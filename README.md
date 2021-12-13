@@ -36,20 +36,3 @@ puis ajouter en bas de page, en remplacant <path> par le chemin d'accès au doss
 
 
 
-### Ressources :
-
-https://www.u-blox.com/sites/default/files/products/documents/NEO-6_DataSheet_(GPS.G6-HW-09005).pdf
-https://www.openimpulse.com/blog/wp-content/uploads/wpsc/downloadables/GY-NEO6MV2-GPS-Module-Datasheet.pdf
-
-https://gist.github.com/hdoverobinson/42732da4c5b50d031f60c1fae39f0720
-https://www.engineersgarage.com/articles-raspberry-pi-neo-6m-gps-module-interfacing/
-
-https://fr.wikipedia.org/wiki/NMEA_0183#cite_note-SommeDeControleNMEA-4
-
-
-study on cyclist's work :
-https://link.springer.com/article/10.1007/s12283-017-0234-1
-
-https://www.raspberrypi.com/documentation/computers/remote-access.html
-  
-https://docs.python-guide.org/writing/structure/
