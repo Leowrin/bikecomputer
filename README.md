@@ -17,7 +17,7 @@ La liste des paquets est dans le fichier `packages.txt`, celle des librairies da
 
 
 
-Une fois les librairies instalées, le code `compute.c` doit être compilé en un script nommé `gps`.
+Une fois les librairies instalées, le code `compute.c` doit être compilé dans `/home/pi/bikecomputer/` en un script nommé `gps`.
 
 Pour que le processus tourne à chaque démarrage du RaspberryPi, une méthode possible est d'ajouter `main.py` aux cronjobs, pour se faire,
 dans le terminal :
