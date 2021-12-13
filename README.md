@@ -7,11 +7,13 @@ Le processus `main.py` tourne en boucle, dès que le GPIO 13 (board no°36) est 
 Plus de détails sont disponible dans le [wiki](https://github.com/Leowrin/bikecomputer/wiki#principe-g%C3%A9n%C3%A9ral)
 
 ## Installation :
-Cloner ou télécharger cette page dans `/home/pi/`, renommer `bikecomputer-main` en `bikecomputer`. Puis installer les paquets et librairies python3 :
+Cloner ou télécharger cette page dans `/home/pi/`, renommer le dossier `bikecomputer-main` en `bikecomputer`. Puis installer les paquets et librairies python3 :
 
 -pour installer les paquets; `xargs sudo apt install < packages.txt`
 
 -pour installer les librairies python3; `sudo pip3 install requirements.txt`
+
+(P.S. Les droits administrateurs sont nécéssaire pour installer les paquets/librairies sur tout le système et pas seulement sur l'utilisateur)
 
 La liste des paquets est dans le fichier `packages.txt`, celle des librairies dans `requirements.txt`,
 
