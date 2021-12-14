@@ -11,4 +11,4 @@ pressureSensor_work_offset=0.004
 samplingRate=1
 
 #GPIO BUS, =1 for RaspberryPi 3, might be=0 for different versions.
-SMBus=1
+i2c_bus=1
