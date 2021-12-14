@@ -17,7 +17,7 @@ Cloner ou télécharger ce repository dans `/home/pi/`, renommer le dossier `bik
 
 - pour installer les paquets; `xargs sudo apt install < packages.txt`
 
-- pour installer les librairies python3; `sudo pip3 install requirements.txt`
+- pour installer les librairies python3; `sudo pip3 install -r requirements.txt`
 
 (P.S. Les droits administrateurs sont nécéssaire pour installer les paquets/librairies sur tout le système et pas seulement sur l'utilisateur)
 
