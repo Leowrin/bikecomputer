@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
   //calcul de powergGPS positif, pas utile, data
   for (size_t i = 0; i < csvLen; i++) {
     if (deltaHGPS[i] > 0) {
-      powergGPS[i] = mass * 9.81 * deltaHGPS[i];
+      powergGPS[i] = mass * g * deltaHGPS[i];
     }
   }
 
@@ -236,7 +236,7 @@ int main(int argc, char *argv[]) {
     workgGPS[i] = workgGPS[i - 1];
     if (deltaHGPS[i] > 0) {
       // /3600 pour wattheure au lieu de joules
-      workgGPS[i] += (mass * 9.81 * deltaHGPS[i]) / 3600;
+      workgGPS[i] += (mass * g * deltaHGPS[i]) / 3600;
     }
   }
 
@@ -247,8 +247,7 @@ int main(int argc, char *argv[]) {
 
   //calcul de powergPres positif, a remplacer par F ------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
-    powergPres[i] = mass * 9.81 * deltaHPres[i];
-
+    powergPres[i] = mass * g * deltaHPres[i];
   }
 
 
@@ -259,7 +258,7 @@ int main(int argc, char *argv[]) {
     workgPres[i] = workgPres[i - 1];
     if (deltaHPres[i] > 0) {
       // /3600 pour wattheure au lieu de joules
-      workgPres[i] += (mass * 9.81 * deltaHPres[i]) / 3600;
+      workgPres[i] += (mass * g * deltaHPres[i]) / 3600;
     }
     if (workgPres[i] > 0){
       workgPres[i] -= 0.004 / 90 * mass;
