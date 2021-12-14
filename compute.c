@@ -55,11 +55,6 @@ double potentialEnergy(double m, double g, double dh){
 
 
 
-
-
-
-
-
 int main(int argc, char *argv[]) {
 
   int mass = 80;
@@ -80,7 +75,7 @@ int main(int argc, char *argv[]) {
   int csvWid = atoi(argv[3]);
 
   //creation des tableaux
-    //creation du bloc memoire pour les poidouble Froll(float cr, float m, float g)nts gps
+  //creation du bloc memoire pour les poidouble Froll(float cr, float m, float g)nts gps
   double * pythonFile = malloc(csvWid * csvLen * sizeof (double));
 
   double * wgs84 = malloc(2 * csvLen * sizeof (double));
@@ -107,8 +102,6 @@ int main(int argc, char *argv[]) {
 
   double * airResistance = calloc(csvLen, sizeof (double));
 
-  //double * slopeForce = calloc(csvLen, sizeof (double));
-
   double * totalForce = calloc(csvLen, sizeof (double));
 
   double * power = calloc(csvLen, sizeof (double));
@@ -128,7 +121,6 @@ int main(int argc, char *argv[]) {
 
 
   for (size_t i = 0; i < csvLen; i++){
-    //int tmpA = i;
     double tmpX;
     double tmpY;
     double tmpH;
@@ -152,6 +144,7 @@ int main(int argc, char *argv[]) {
       }
     }
   }
+
   if ( wgs84[(csvLen - 1) * 2] == 0 ){
     if ( wgs84[0] == 0 ) {
     }
@@ -174,15 +167,14 @@ int main(int argc, char *argv[]) {
 
 
 
-
   //creation des coo lv95 N (y) et E (x)
   for (size_t i = 0; i < csvLen; i++) {
-    //axe X selon LV95
     double phi = wgs84[i * 2]*3600;
     double phiP = (phi - 169028.66) / 10000;
     double lambda = wgs84[i * 2 + 1]*3600;
     double lambdaP = (lambda - 26782.5) / 10000;
 
+    //axe X selon LV95
     lv95X[i] = 2600072.37;
     lv95X[i] += 211455.93 * lambdaP;
     lv95X[i] -= 10938.51 * lambdaP * phiP;
@@ -201,8 +193,6 @@ int main(int argc, char *argv[]) {
 
 
 
-
-
   //calcul de deltaHGPS entre chaque mesure, pas utile, juste pour data
   for (size_t i = 1; i < csvLen; i++) {
     int j = i - 1;
@@ -217,13 +207,14 @@ int main(int argc, char *argv[]) {
     deltaHPres[i] = deltaPres * 100 / 12;
   }
 
+  //calcul du profil altimetrique
   altimetry[0] = 0;
   for (size_t i = 1; i < csvLen; i++) {
     double deltaPres = pythonFile[0 * csvWid + 3] - pythonFile[i * csvWid + 3];
     altimetry[i] = deltaPres * 100 / 12;
   }
 
-  //calcul de powergGPS positif, pas utile, data
+  //calcul de powergGPS positif, pas utilisé dans les graphs, mais utile pour debug ou analyse de donees
   for (size_t i = 0; i < csvLen; i++) {
     if (deltaHGPS[i] > 0) {
       powergGPS[i] = mass * g * deltaHGPS[i];
@@ -231,29 +222,23 @@ int main(int argc, char *argv[]) {
   }
 
 
-  //calcul de workgGPS possitif, a remplacer par F -------------------------------------------------------------------------------
+  //calcul du travail a partir du denivelee GPS
   for (size_t i = 1; i < csvLen; i++) {
     workgGPS[i] = workgGPS[i - 1];
     if (deltaHGPS[i] > 0) {
-      // /3600 pour wattheure au lieu de joules
+      // /3600 pour avoir des wattheure au lieu de joules
       workgGPS[i] += (mass * g * deltaHGPS[i]) / 3600;
     }
   }
 
 
-
-
-
-
-  //calcul de powergPres positif, a remplacer par F ------------------------------------------------------------------------------
+  //calcul de la puissance derivee du denivele mesure par le capteur de pression
   for (size_t i = 0; i < csvLen; i++) {
     powergPres[i] = mass * g * deltaHPres[i];
   }
 
 
-
-
-  //calcul de workgPres possitif, a remplacer par Sigma F/n*v --------------------------------------------------------------------
+  //calcul du travail derive du denivele mesure par le capteur de pression
   for (size_t i = 1; i < csvLen; i++) {
     workgPres[i] = workgPres[i - 1];
     if (deltaHPres[i] > 0) {
@@ -265,11 +250,6 @@ int main(int argc, char *argv[]) {
     }
 
   }
-
-
-
-
-
 
 
 
@@ -304,7 +284,7 @@ int main(int argc, char *argv[]) {
 
 
 
-  //creation de deltaPos
+  //creation de delta position
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = deltaX[i] * deltaX[i] + deltaY[i] * deltaY[i];
     tmp = sqrt(tmp);
@@ -312,40 +292,30 @@ int main(int argc, char *argv[]) {
     deltaPos[i] = tmp;
   }
 
-  //creation de distance.
+  //creation de la distance cumulee
   for (size_t i = 1; i < csvLen; i++) {
     distance[i] = distance[i-1] + deltaPos[i];
   }
 
 
-
-  //force de l'airResistance
+  //force de la resistance ed l'air
   for (size_t i = 1; i < csvLen; i++) {
     airResistance[i] = Fwind(r, cwA, deltaPos[i]);
   }
 
-/*
-  //force slope
-  for (size_t i = 1; i < csvLen; i++) {
-    if (deltaPos[i] != 0){
-      slopeForce[i] = slopeForce(m, g, deltaHPres[i], deltaPos[i]);
-    }
-  }
-*/
 
-  //totalForce
+  //toutes les forces de frottements
   for (size_t i = 1; i < csvLen; i++) {
     totalForce[i] = (airResistance[i] + Froll(cr, mass, g)) / n;
   }
 
-
+  // calcul de la puissance totale en chaque instant
   for (size_t i = 1; i < csvLen; i++) {
     power[i] = totalForce[i] * deltaPos[i];
     power[i] += potentialEnergy(mass, g, deltaHPres[i]);
-
   }
 
-
+  //calcul de l'energie cumulee
   for (size_t i = 1; i < csvLen; i++) {
     sumEnergy[i] += sumEnergy[i - 1];
     if (0 < power[i]) {
@@ -362,11 +332,6 @@ int main(int argc, char *argv[]) {
     printf("%f, %f, %f, %f, %f, %f, %f, %f, %f\n", deltaHGPS[i], powergGPS[i], workgGPS[i], deltaHPres[i], powergPres[i], workgPres[i], power[i], sumEnergy[i], altimetry[i]);
   }
 
-
-
-
-
-  //printf("%f\n", workgGPS);
 
 
   free(pythonFile);

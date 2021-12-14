@@ -3,6 +3,7 @@ mass=80
 
 #gpio pins are numbered following BOARD numbering
 recordSwitch_gpio=36
+recordLED_gpio=40
 
 #work offset for pressure sensor, default=0.004
 pressureSensor_work_offset=0.004
