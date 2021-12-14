@@ -6,17 +6,17 @@ import os
 import math
 from smbus import SMBus ### RPI only
 from bmp280 import BMP280 ### RPI only
+import config
 
  ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
-bmp280 = BMP280(i2c_dev=SMBus(1))
+bmp280 = BMP280(i2c_dev=SMBus(i2c_bus))
 
 GPIO.setmode(GPIO.BOARD)
 
-button = 36
 led = 40
 
 ### setup les pin pour le record switch et la led temoin
-GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(recordSwitch_gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(led, GPIO.OUT)
 
 ### necessaire pour reset le read buffer
@@ -60,7 +60,7 @@ stateB = 0
 
 
 while 1 :
-    while GPIO.input(button) == 0 :
+    while GPIO.input(recordSwitch_gpio) == 0 :
         stateB = 1
         text = None
 
@@ -70,10 +70,10 @@ while 1 :
             lat = 0.0
             lon = 0.0
             alt = 0.0
-            
+
             ### start LED temoin
             GPIO.output(led, GPIO.HIGH)
-            
+
             coordinates = np.empty((0, 4), dtype=float)
 
             folder = "/home/pi/bikecomputer/logs/"
