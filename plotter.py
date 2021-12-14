@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import sys
 
 
-### filename, to change
+### args
 filename = "computed_data.csv"
 folder = str(sys.argv[1])
 
@@ -13,34 +13,48 @@ file = np.genfromtxt(folder+filename, delimiter = ', ', dtype = None)
 csvLen = file.shape[0]
 
 
-### power - energy, gps vs bmp280 vs bmp280 corrige
+### plot mean power over 7 sec and energy use over time
 fig, (p1, p2) = plt.subplots(2)
 
-p1.plot(np.arange(0,csvLen), file[:, 8], label="gps")
-p1.plot(np.arange(0,csvLen), file[:, 11], label="bmp280")
-p1.plot(np.arange(0,csvLen), file[:, 13], label="corrected_bmp280")
+#p1.plot(np.arange(0,csvLen), file[:, 8], label="gps")
+meanPPower = np.array([])
+meanTPower =np.array([])
 
-p2.plot(np.arange(0,csvLen), file[:, 9])
-p2.plot(np.arange(0,csvLen), file[:, 12])
-p2.plot(np.arange(0,csvLen), file[:, 14], label="total energy (height+resistance)")
+for i in range(1, csvLen-5):
+    meanPPower = np.append(meanPPower, [(file[i-3, 11] + file[i-2, 11] + file[i-1, 11] + file[i, 11] + file[i+1, 11] + file[i+2, 11] + file[i+3, 11]) / 7])
 
-plt.xlabel("time [s]")
 
-p1.set_ylabel("power [w]")
-p2.set_ylabel("energy [wh]")
+for i in range(1, csvLen-5):
+    meanTPower = np.append(meanTPower, [(file[i-3, 13] + file[i-2, 13] + file[i-1, 13] + file[i, 13] + file[i+1, 13] + file[i+2, 13] + file[i+3, 13]) / 7])
+
+
+#p1.plot(np.arange(0,csvLen), file[:, 11], label="potential power")
+#p1.plot(np.arange(0,csvLen), file[:, 13], label="total power")
+p1.plot(np.arange(3, csvLen - 3), meanPPower, label="Power output (slope only)")
+p1.plot(np.arange(3, csvLen - 3), meanTPower, label="Total power output")
+
+#p2.plot(np.arange(0,csvLen), file[:, 9])
+p2.plot(np.arange(0,csvLen), file[:, 12], label="Potential energy")
+p2.plot(np.arange(0,csvLen), file[:, 14], label="Total energy")
+
+plt.xlabel("Time [s]")
+
+p1.set_ylabel("Power [w]")
+p2.set_ylabel("Energy [wh]")
 
 p1.legend()
+p2.legend()
 
 p1.grid()
 p2.grid()
 
-plt.savefig(folder + "energy_comparison.svg", format="svg", dpi=1200)
-### plt.show()
+plt.savefig(folder + "power_energy.svg", format="svg", dpi=1200)
+#plt.show()
 plt.clf()
 
 
 ### deviation from reference point
-plt.scatter(file[:, 0] - 2538365.5, file[:, 2] - 1151904.3, c=np.linspace(0, 1, csvLen), cmap="plasma")
+plt.scatter(file[:, 0] - file[0, 0], file[:, 2] - file[0, 2], c=np.linspace(0, 1, csvLen), cmap="plasma")
 
 plt.xlabel("Deviation relative to reference point, axis E [m]")
 plt.ylabel("Deviation relative to reference point, axis N [m]")
@@ -59,7 +73,7 @@ y2 = file[:,10]
 
 plt.plot(np.arange(0,csvLen), y1, label="GPS derived deltaH")
 plt.plot(np.arange(0,csvLen), y2, label="bmp280 derived deltaH")
-
+plt.title("Variation in altitude across time")
 
 limit = np.amax(np.absolute(np.concatenate((y1, y2))))
 plt.ylim(-limit, limit)
@@ -77,6 +91,8 @@ plt.clf()
 
 
 ###
-plt.plot(np.arange(0,csvLen), file[:,15], label="altimetry")
-plt.savefig(folder + "altimetry.svg", format="svg")
+plt.plot(np.arange(0,csvLen), file[:,15])
+plt.grid()
+plt.title("Altitude variation from start point, across time")
+plt.savefig(folder + "altimetric_profile.svg", format="svg")
 plt.clf()

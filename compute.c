@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-      
+
 
 
 
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
   }
 
 
- 
+
 
 
 
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
     double deltaPres = pythonFile[j * csvWid + 3] - pythonFile[i * csvWid + 3];
     deltaHPres[i] = deltaPres * 100 / 12;
   }
-  
+
   altimetry[0] = 0;
   for (size_t i = 1; i < csvLen; i++) {
     double deltaPres = pythonFile[0 * csvWid + 3] - pythonFile[i * csvWid + 3];
@@ -261,8 +261,8 @@ int main(int argc, char *argv[]) {
     if (deltaHPres[i] > 0) {
       // /3600 pour wattheure au lieu de joules
       workgPres[i] += (mass * 9.81 * deltaHPres[i]) / 3600;
-      workgPres[i] -= 0.004 / 90 * mass;
     }
+    workgPres[i] -= 0.004 / 90 * mass;
   }
 
 
