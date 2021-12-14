@@ -247,9 +247,8 @@ int main(int argc, char *argv[]) {
 
   //calcul de powergPres positif, a remplacer par F ------------------------------------------------------------------------------
   for (size_t i = 0; i < csvLen; i++) {
-    if (deltaHPres[i] > 0) {
-      powergPres[i] = mass * 9.81 * deltaHPres[i];
-    }
+    powergPres[i] = mass * 9.81 * deltaHPres[i];
+
   }
 
 
