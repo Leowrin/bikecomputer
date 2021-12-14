@@ -8,15 +8,14 @@ from smbus import SMBus ### RPI only
 from bmp280 import BMP280 ### RPI only
 import config
 
- ###https://pyserial.readthedocs.io/en/latest/shortintro.html#opening-serial-ports
-bmp280 = BMP280(i2c_dev=SMBus(i2c_bus))
+bmp280 = BMP280(i2c_dev=SMBus(config.i2c_bus))
 
 GPIO.setmode(GPIO.BOARD)
 
 led = 40
 
 ### setup les pin pour le record switch et la led temoin
-GPIO.setup(recordSwitch_gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(config.recordSwitch_gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(led, GPIO.OUT)
 
 ### necessaire pour reset le read buffer
@@ -60,7 +59,7 @@ stateB = 0
 
 
 while 1 :
-    while GPIO.input(recordSwitch_gpio) == 0 :
+    while GPIO.input(config.recordSwitch_gpio) == 0 :
         stateB = 1
         text = None
 
