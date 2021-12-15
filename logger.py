@@ -22,29 +22,30 @@ ser = serial.Serial("/dev/serial0", baudrate=9600, timeout=1)
 ser.close()
 
 def terminate(folder, filename, coordinates):
-    try :
-        print(folder+filename)
-        np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
+    
+    print(folder+filename)
+    np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
 
-        ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
-        cmd = "/home/pi/bikecomputer/gps "
-        cmd += folder+filename + ' '
-        cmd += str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + ' ' + config.mass
-        cmd += " > " + folder + "computed_data.csv"
-        os.system(cmd)
+      ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
+    
+    cmd = "/home/pi/bikecomputer/gps "
+    cmd += folder+filename + ' '
+    cmd += str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + ' ' + str(config.mass)
+    cmd += " > " + folder + "computed_data.csv"
+    os.system(cmd)
 
         ### debug
-        time.sleep(1)
+    time.sleep(1)
 
-        os.system("python3 /home/pi/bikecomputer/plotter.py " + folder)
+    os.system("python3 /home/pi/bikecomputer/plotter.py " + folder)
 
-        ser.close()
+    ser.close()
 
-        return 1
+    return 1
 
-    except :
-        return 0
-
+    
+    
+    
 
 count = 0
 lat = 0.0
