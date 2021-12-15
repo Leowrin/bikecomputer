@@ -27,7 +27,7 @@ def terminate(folder, filename, coordinates):
         np.savetxt(folder+filename, coordinates, fmt='%f', delimiter=',')
 
         ### lancer le code C avec la longueur du fichier en argument. coordinates.shape[0]
-        cmd = "/home/pi/bikecomputer/gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + " > " + folder + "computed_data.csv"
+        cmd = "/home/pi/bikecomputer/gps " + folder+filename + ' ' + str(coordinates.shape[0]) + ' ' + str(coordinates.shape[1]) + ' ' + config.mass + " > " + folder + "computed_data.csv"
         os.system(cmd)
 
         ### debug
@@ -125,7 +125,7 @@ while 1 :
                     lat = 0
                     lon = 0
                     alt = 0
-                    
+
                 ### convertion from minutes' to decimal
                 tmp = lat - math.floor(lat)
                 tmp /= 60

@@ -37,7 +37,7 @@ bool readCsv(char * filename, double * values, int sizeX, int sizeY) {
 }
 
 
-//constant
+//fonction force de frottements
 double Froll(float cr, float m, float g){
   return cr * m * g;
 }
@@ -47,7 +47,7 @@ double Fwind(float r, float cwA, float ws){
   return r * cwA * ws * ws / 2;
 }
 
-
+//fonction energie potentielle
 double potentialEnergy(double m, double g, double dh){
   return m * g * dh;
 }
@@ -57,7 +57,17 @@ double potentialEnergy(double m, double g, double dh){
 
 int main(int argc, char *argv[]) {
 
-  int mass = 80;
+  //lecture des arguments lors de l'appel du script
+  if (argc != 5) {
+    printf("errno1");
+    return 1;
+  }
+
+  char * filename = argv[1];
+  int csvLen = atoi(argv[2]);
+  int csvWid = atoi(argv[3]);
+  double mass = atof(argv[4]);
+
   double cr = 0.003;
   float g = 9.81;
   float n = 0.94;
@@ -65,27 +75,20 @@ int main(int argc, char *argv[]) {
   float r = 1.2;
 
 
-  //lecture des arguments lors de l'appel du script
-  if (argc != 4) {
-    printf("errno1");
-    return 1;
-  }
-  char * filename = argv[1];
-  int csvLen = atoi(argv[2]);
-  int csvWid = atoi(argv[3]);
 
   //creation des tableaux
-  //creation du bloc memoire pour les poidouble Froll(float cr, float m, float g)nts gps
+  //coordonnees
   double * pythonFile = malloc(csvWid * csvLen * sizeof (double));
-
   double * wgs84 = malloc(2 * csvLen * sizeof (double));
   double * lv95X = malloc(csvLen * sizeof (double));
   double * lv95Y = malloc(csvLen * sizeof (double));
 
+  //profile
   double * deltaHGPS = calloc(csvLen, sizeof (double));
   double * deltaHPres = calloc(csvLen, sizeof (double));
   double * altimetry = malloc(csvLen * sizeof (double));
 
+  //mouvement
   double * deltaX = calloc(csvLen, sizeof (double));
   double * deltaY = calloc(csvLen, sizeof (double));
 
@@ -93,6 +96,7 @@ int main(int argc, char *argv[]) {
 
   double * distance = calloc(csvLen, sizeof (double));
 
+  //forces et energies
   double * workgGPS = calloc(csvLen, sizeof (double));
   double * powergGPS = malloc(csvLen * sizeof (double));
 
@@ -112,7 +116,8 @@ int main(int argc, char *argv[]) {
   readCsv(filename, pythonFile, csvWid, csvLen);
 
 
-  //copie des points GPS, utile uniquement pour debug et probleme export python
+
+  //copie des points GPS
   for (size_t i = 0; i < csvLen; i++) {
     for (size_t j = 0; j < 2; j++) {
       wgs84[i * 2 + j] = pythonFile[i * csvWid + j];
@@ -120,43 +125,99 @@ int main(int argc, char *argv[]) {
   }
 
 
-  for (size_t i = 0; i < csvLen; i++){
-    double tmpX;
-    double tmpY;
-    double tmpH;
-    if (wgs84[i * 2] == 0){
+  //creation des coordonnees lv95 N (y) et E (x)
+  for (size_t i = 0; i < csvLen; i++) {
+    if (wgs84[i * 2] == 0 || wgs84[i * 2 + 1] == 0){
+      lv95X[i] = 0;
+      lv95Y[i] = 0;
+    }
+    else{
+      double phi = wgs84[i * 2]*3600;
+      double phiP = (phi - 169028.66) / 10000;
+      double lambda = wgs84[i * 2 + 1/* condition */]*3600;
+      double lambdaP = (lambda - 26782.5) / 10000;
+
+      //axe X selon LV95
+      lv95X[i] = 2600072.37;
+      lv95X[i] += 211455.93 * lambdaP;
+      lv95X[i] -= 10938.51 * lambdaP * phiP;
+      lv95X[i] -= 0.36 * lambdaP * phiP * phiP;
+      lv95X[i] -= 44.54 * phiP * phiP * phiP;
+
+      //axe Y
+      lv95Y[i] = 1200147.07;
+      lv95Y[i] += 308807.95 * phiP;
+      lv95Y[i] += 3745.25 * lambdaP * lambdaP;
+      lv95Y[i] += 76.63 * phiP * phiP;
+      lv95Y[i] -= 194.56 * lambdaP * lambdaP * phiP;
+      lv95Y[i] += 119.79 * phiP * phiP * phiP;
+    }
+  }
+
+
+  // correction des valeurs GPS, debut d'acquisition de donnees sans signal
+  if (lv95X[0] == 0) {
+    int i = 0;
+    while (lv95X[i] == 0) {
+      i++;
+      if (lv95X[i] != 0) {
+        for (size_t j = 0; j < i; j++) {
+          lv95X[j] = lv95X[i];
+          lv95Y[j] = lv95Y[i];
+        }
+        break;
+      }
+    }
+  }
+
+  // correction des pertes de signal en cours de parcours
+  for (size_t i = 1; i < csvLen - 1; i++){
+    if (lv95X[i] == 0){
       int j = i;
-      while (wgs84[j * 2] == 0) {
+      double tmpXA = lv95X[i - 1];
+      double tmpYA = lv95Y[i - 1];
+      double tmpHA = pythonFile[(i - 1) * csvWid + 2];
+
+      while (lv95X[j] == 0) {
         j++;
         if (j == csvLen){
           break;
         }
-        if (wgs84[j * 2] != 0) {
-          tmpX = wgs84[j * 2];
-          tmpY = wgs84[j * 2 + 1];
-          tmpH = pythonFile[j * csvWid + 2];
+        if (lv95X[j] != 0) {
+          double tmpXB = lv95X[j];
+          double tmpYB = lv95Y[j];
+          double tmpHB = pythonFile[j * csvWid + 2];
+
+          int deltaLoss = j - i + 1;
+          double tmpDeltaX = (tmpXB - tmpXA) / deltaLoss;
+          double tmpDeltaY = (tmpYB - tmpYA) / deltaLoss;
+          double tmpDeltaH = (tmpHB - tmpHA) / deltaLoss;
+
           for (size_t k = i; k < j; k++) {
-            wgs84[i * 2] = tmpX;
-            wgs84[i * 2 + 1] = tmpY;
-            pythonFile[i * csvWid + 2] = tmpH;
+            lv95X[k] = lv95X[k - 1] + tmpDeltaX;
+            lv95Y[k] = lv95Y[k - 1] + tmpDeltaY;
+            pythonFile[k * csvWid + 2] = pythonFile[(k - 1) * csvWid + 2] + tmpDeltaH;
           }
+          i = j;
+          break;
         }
       }
     }
   }
 
-  if ( wgs84[(csvLen - 1) * 2] == 0 ){
-    if ( wgs84[0] == 0 ) {
+  // correction des dernieres valeurs en cas de non-signal en fin de parcours
+  if ( lv95X[(csvLen - 1)] == 0 ){
+    if ( lv95X[0] == 0 ) {
     }
     else {
       for (size_t i = csvLen - 1; i > 0; i--) {
-        if (wgs84[i * 2] != 0){
-          double tmpX = wgs84[i * 2];
-          double tmpY = wgs84[i * 2 + 1];
+        if (lv95X[i] != 0){
+          double tmpX = lv95X[i];
+          double tmpY = lv95Y[i];
           double tmpH = pythonFile[i * csvWid + 2];
           for (size_t k = i + 1; k < csvLen; k++) {
-            wgs84[2 * k] = tmpX;
-            wgs84[2 * k + 1] = tmpY;
+            lv95X[k] = tmpX;
+            lv95Y[k] = tmpY;
             pythonFile[k * csvWid + 2] = tmpH;
           }
           break;
@@ -167,45 +228,20 @@ int main(int argc, char *argv[]) {
 
 
 
-  //creation des coo lv95 N (y) et E (x)
-  for (size_t i = 0; i < csvLen; i++) {
-    double phi = wgs84[i * 2]*3600;
-    double phiP = (phi - 169028.66) / 10000;
-    double lambda = wgs84[i * 2 + 1]*3600;
-    double lambdaP = (lambda - 26782.5) / 10000;
-
-    //axe X selon LV95
-    lv95X[i] = 2600072.37;
-    lv95X[i] += 211455.93 * lambdaP;
-    lv95X[i] -= 10938.51 * lambdaP * phiP;
-    lv95X[i] -= 0.36 * lambdaP * phiP * phiP;
-    lv95X[i] -= 44.54 * phiP * phiP * phiP;
-
-    //axe Y
-    lv95Y[i] = 1200147.07;
-    lv95Y[i] += 308807.95 * phiP;
-    lv95Y[i] += 3745.25 * lambdaP * lambdaP;
-    lv95Y[i] += 76.63 * phiP * phiP;
-    lv95Y[i] -= 194.56 * lambdaP * lambdaP * phiP;
-    lv95Y[i] += 119.79 * phiP * phiP * phiP;
-  }
-
-
-
-
-  //calcul de deltaHGPS entre chaque mesure, pas utile, juste pour data
+  //calcul de deltaHGPS entre chaque mesure, pas utile pour les calcus, mais juste pour les analyses initiales
   for (size_t i = 1; i < csvLen; i++) {
     int j = i - 1;
     deltaHGPS[i] = pythonFile[i * csvWid + 2] - pythonFile[j * csvWid + 2];
   }
 
 
-  //calcul de deltaHPres
+  //calcul du denivele entre chaque point, en fonction de la difference de pression atmospherique
   for (size_t i = 1; i < csvLen; i++) {
     int j = i - 1;
     double deltaPres = pythonFile[j * csvWid + 3] - pythonFile[i * csvWid + 3];
     deltaHPres[i] = deltaPres * 100 / 12;
   }
+
 
   //calcul du profil altimetrique
   altimetry[0] = 0;
@@ -213,6 +249,7 @@ int main(int argc, char *argv[]) {
     double deltaPres = pythonFile[0 * csvWid + 3] - pythonFile[i * csvWid + 3];
     altimetry[i] = deltaPres * 100 / 12;
   }
+
 
   //calcul de powergGPS positif, pas utilisé dans les graphs, mais utile pour debug ou analyse de donees
   for (size_t i = 0; i < csvLen; i++) {
@@ -252,12 +289,11 @@ int main(int argc, char *argv[]) {
   }
 
 
-
   // creation delta X et debug pour enlever les "teleport"
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = lv95X[i] - lv95X[i - 1];
 
-    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data, a retirer ? -------------------------------????
+    //check if distance is over 20 meter (70 km/h) or below 0.4m (1.4 km/h) to cancel any impossible data
     if (fabs(tmp) > 20 || fabs(tmp) < 0.4) {
       tmp = 0;
     }
@@ -265,23 +301,17 @@ int main(int argc, char *argv[]) {
     deltaX[i] = tmp;
   }
 
-
-
-
-
   // creation delta Y et debug pour enlever les "teleport"
   for (size_t i = 1; i < csvLen; i++) {
     double tmp = lv95Y[i] - lv95Y[i + 1];
 
-    //check if distance is over 20 meter / 1s (70 km/h) to cancel any impossible data, a retirer ? -------------------------------????
+    //check if distance is over 20 meter (70 km/h) or below 0.4m (1.4 km/h) to cancel any impossible data
     if (fabs(tmp) > 20 || fabs(tmp) < 0.4) {
       tmp = 0;
     }
 
     deltaY[i] = tmp;
   }
-
-
 
 
   //creation de delta position
@@ -292,13 +322,14 @@ int main(int argc, char *argv[]) {
     deltaPos[i] = tmp;
   }
 
+
   //creation de la distance cumulee
   for (size_t i = 1; i < csvLen; i++) {
     distance[i] = distance[i-1] + deltaPos[i];
   }
 
 
-  //force de la resistance ed l'air
+  //force de  resistance de l'air
   for (size_t i = 1; i < csvLen; i++) {
     airResistance[i] = Fwind(r, cwA, deltaPos[i]);
   }
@@ -309,11 +340,13 @@ int main(int argc, char *argv[]) {
     totalForce[i] = (airResistance[i] + Froll(cr, mass, g)) / n;
   }
 
+
   // calcul de la puissance totale en chaque instant
   for (size_t i = 1; i < csvLen; i++) {
     power[i] = totalForce[i] * deltaPos[i];
     power[i] += potentialEnergy(mass, g, deltaHPres[i]);
   }
+
 
   //calcul de l'energie cumulee
   for (size_t i = 1; i < csvLen; i++) {
@@ -326,7 +359,9 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  // à remplacer par un proper fprintf ?-----------------------------------------------------------------------------------------
+
+
+  // print des donnees
   for (size_t i = 0; i < csvLen; i++) {
     printf("%f, %f, %f, %f, %f, %f, %f, ", lv95X[i], deltaX[i], lv95Y[i], deltaY[i], deltaPos[i], distance[i], pythonFile[i * csvWid + 2]);
     printf("%f, %f, %f, %f, %f, %f, %f, %f, %f\n", deltaHGPS[i], powergGPS[i], workgGPS[i], deltaHPres[i], powergPres[i], workgPres[i], power[i], sumEnergy[i], altimetry[i]);
