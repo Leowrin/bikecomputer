@@ -166,6 +166,9 @@ int main(int argc, char *argv[]) {
           lv95Y[j] = lv95Y[i];
         }
         break;
+      if (i == csvLen) {
+        break;
+      }
       }
     }
   }
