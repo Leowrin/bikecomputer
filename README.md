@@ -10,7 +10,7 @@ Le processus `logger.py` tourne en boucle, dès que le GPIO 13 (board no°36) es
 Il n'y a pas de fin au processus `logger.py`, alors des enregistrements peuvent être lancé à la suite et à tout moment.
 Pour arrêter tous les processus python3: `killall python3`.
 
-Plus de détails sont disponible sur la page [wiki](https://github.com/Leowrin/bikecomputer/wiki#principe-g%C3%A9n%C3%A9ral)
+Plus de détails sont disponible sur la page [wiki](https://github.com/Leowrin/bikecomputer/wiki#principe-g%C3%A9n%C3%A9ral) du projet.
 
 ## Installation :
 Cloner ou télécharger ce repository dans `/home/pi/`, renommer le dossier `bikecomputer-main` en `bikecomputer`. Puis installer les paquets et librairies python3 :
