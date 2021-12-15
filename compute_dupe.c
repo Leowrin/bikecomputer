@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
           double tmpYB = lv95Y[j];
           //double tmpHB = pythonFile[j * csvWid + 2];
 
-          int deltaLoss = j - i;
+          int deltaLoss = j - i - 1;
           double tmpDeltaX = (tmpXB - tmpXA) / deltaLoss;
           double tmpDeltaY = (tmpYB - tmpYA) / deltaLoss;
 
