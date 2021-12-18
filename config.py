@@ -5,8 +5,5 @@ mass=80
 recordSwitch_gpio=36
 recordLED_gpio=40
 
-#work offset for pressure sensor, default=0.004
-pressureSensor_work_offset=0.004
-
 #GPIO BUS, =1 for RaspberryPi 3, might be=0 for different versions.
 i2c_bus=1
