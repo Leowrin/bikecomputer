@@ -32,10 +32,16 @@ dans le terminal :
 `crontab -e`
 puis ajouter en bas de page :
 `@reboot python3 home/pi/bikecomputer/main.py`
+
+Certains paramètres peuvent être modifiés dans le fichier `config.py` :
+|mass             |recordSwitch_gpio                                   |recordLED_gpio       |i2c_bus |
+|-----------------|----------------------------------------------------|---------------------|--------|
+|masse du cycliste [kg]| pin à connecter au GND pour lancer l'enregistrement| pin de la LED témoin| bus I2C|
+
   
-  Connecter le GPIO 13 à GND pour lancer l'enregistrement et le calcul des forces.
+  Connecter le GPIO 13 à GND pour lancer l'enregistrement et le calcul des forces. Si une led a été branchée sur le pin recordLED_gpio, elle s'allume pour confirmer l'enregistrement des données.
   
-  Déconnecter le GPIO du GND pour terminer l'enregistrement et créer les graphs sur les résultats.
+  Déconnecter le GPIO du GND pour terminer l'enregistrement et créer les graphs sur les résultats. La LED s'éteint.
 
 
 
