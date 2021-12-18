@@ -5,7 +5,7 @@ Ces données sont disponibles sous forme de graphe (ou de fichier `.csv`), enreg
 (Les données pourraient également être accessible directement sur la carte SD, en configurant un serveur web sur le Raspberry ou en connectant un écran, méthode libre à l'utilisateur)
 
 ## Structure :
-Le processus `logger.py` tourne en boucle, dès que le GPIO 13 (board no°36) est connecté au GND, l'enregistrement des données commence. L'enregistrement s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données (fichiers .csv et graphiques) dans `/home/pi/bikecomputer/logs/<date>/`, format YYYY_MM_DD_HH_mm. 
+Le processus `logger.py` tourne en boucle, dès que deux pin sont reliés l'enregistrement des données commence. L'enregistrement s'arrête une fois le GPIO deconnecté du GND, en enregistrant les données (fichiers .csv et graphiques) dans `/home/pi/bikecomputer/logs/<date>/`, format YYYY_MM_DD_HH_mm. 
 
 Il n'y a pas de fin au processus `logger.py`, alors des enregistrements peuvent être lancé à la suite et à tout moment.
 Pour arrêter tous les processus python3: `killall python3`.
