@@ -40,7 +40,7 @@ Certains paramètres peuvent être modifiés dans le fichier `config.py` :
 |masse du cycliste [kg]| pin à connecter au GND pour lancer l'enregistrement| pin de la LED témoin| bus I2C|
 
   
-- Connecter le recordSwitch_gpio au GND pour lancer l'enregistrement et le calcul des forces. Si une led a été branchée sur le pin recordLED_gpio, elle s'allume pour confirmer l'enregistrement des données.
+- Connecter le recordSwitch_gpio au GND pour lancer l'enregistrement et le calcul des forces. Si une LED a été branchée sur le pin recordLED_gpio, elle s'allume pour confirmer l'enregistrement des données.
   
 - Déconnecter le recordSwitch_gpio du GND pour terminer l'enregistrement et créer les graphiques des résultats. La LED s'éteint.
 
