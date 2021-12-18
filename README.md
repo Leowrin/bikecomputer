@@ -1,6 +1,6 @@
 # bikecomputer
 Ce code permet, à l'aide d'un module GPS de type Neo 6M et d'un capteur barrométrique BMP280, d'enregistrer les coordonnées GPS et le dénivelé realisé lors d'un parcours en vélo. Ces données sont ensuite traitées pour calculer la puissance dévelopée par la personne en chaque instant, ainsi que l'énergie dépensée sur le parcours. <br />
-Ces données sont disponibles sous forme de graphe (ou de fichier `.csv`), enregistrés dans les dossiers locaux, accessible en se connectant au RaspBerryPi par VNC par example.
+Ces données sont disponibles sous forme de graphe (ou de fichier `.csv`), enregistrés dans les dossiers locaux, accessible en se connectant au RaspBerryPi par VNC par exemple.
 
 (Les données pourraient également être accessible directement sur la carte SD, en configurant un serveur web sur le Raspberry ou en connectant un écran, méthode libre à l'utilisateur)
 
