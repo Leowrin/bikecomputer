@@ -129,6 +129,7 @@ int main(int argc, char *argv[]) {
 
   //creation des coordonnees lv95 N (y) et E (x)
   for (size_t i = 0; i < csvLen; i++) {
+    //verifie si le point existe, place un 0 sinon. Utile pour la correction ulterieure
     if (wgs84[i * 2] == 0 || wgs84[i * 2 + 1] == 0){
       lv95X[i] = 0;
       lv95Y[i] = 0;
