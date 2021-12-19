@@ -61,27 +61,6 @@ plt.savefig(folder + "gps_deviation.svg", format="svg")
 plt.clf()
 
 
-"""Commented, because results unreadable due to GPS inacuracy
-### deltaH from gps and bmp280
-y1 = file[:,7]
-y2 = file[:,10]
-
-plt.plot(np.arange(0,csvLen), y1, label="GPS derived deltaH")
-plt.plot(np.arange(0,csvLen), y2, label="bmp280 derived deltaH")
-plt.title("Variation in altitude across time")
-
-limit = np.amax(np.absolute(np.concatenate((y1, y2))))
-plt.ylim(-limit, limit)
-
-plt.grid()
-plt.xlabel("Time [s]")
-plt.ylabel("Altitude variation [m]")
-plt.legend()
-plt.savefig(folder + "deltaH.svg", format="svg")
-plt.clf()
-"""
-
-
 
 ### altimetric profile
 plt.plot(np.arange(0,csvLen), file[:,15])
