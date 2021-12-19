@@ -34,8 +34,8 @@ p2.plot(np.arange(0,csvLen), file[:, 14], label="Energy")
 
 plt.xlabel("Time [s]")
 
-p1.set_ylabel("Power [w]")
-p2.set_ylabel("Energy [wh]")
+p1.set_ylabel("Power [W]")
+p2.set_ylabel("Energy [Wh]")
 
 p1.grid()
 p2.grid()
