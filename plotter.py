@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import sys
 
 
-### args
+### arguments
 filename = "computed_data.csv"
 folder = str(sys.argv[1])
 
-
+### lecture de computed_data.csv et creation d'une matrice file
 file = np.genfromtxt(folder+filename, delimiter = ', ', dtype = None)
 
 csvLen = file.shape[0]
@@ -26,24 +26,21 @@ for i in range(1, csvLen-5):
     meanTPower = np.append(meanTPower, [(file[i-3, 13] + file[i-2, 13] + file[i-1, 13] + file[i, 13] + file[i+1, 13] + file[i+2, 13] + file[i+3, 13]) / 7])
 
 
-p1.plot(np.arange(3, csvLen - 3), meanPPower, label="Power output (slope only)")
-p1.plot(np.arange(3, csvLen - 3), meanTPower, label="Total power output")
+#p1.plot(np.arange(3, csvLen - 3), meanPPower, label="Power output (slope only)") ### utilisé seulement pour certains graphes
+p1.plot(np.arange(3, csvLen - 3), meanTPower, label="Power output")
 
-p2.plot(np.arange(0,csvLen), file[:, 12], label="Potential energy")
-p2.plot(np.arange(0,csvLen), file[:, 14], label="Total energy")
+#p2.plot(np.arange(0,csvLen), file[:, 12], label="Potential energy") ### utilisé seulement pour certains graphes
+p2.plot(np.arange(0,csvLen), file[:, 14], label="Energy")
 
 plt.xlabel("Time [s]")
 
 p1.set_ylabel("Power [w]")
 p2.set_ylabel("Energy [wh]")
 
-p1.legend()
-p2.legend()
-
 p1.grid()
 p2.grid()
 
-plt.savefig(folder + "power_energy.svg", format="svg", dpi=1200)
+plt.savefig(folder + "power_energy.svg", format="svg")
 plt.clf()
 
 
@@ -53,14 +50,16 @@ plt.scatter(file[:, 0] - file[0, 0], file[:, 2] - file[0, 2], c=np.linspace(0, 1
 
 plt.xlabel("Deviation relative to reference point, axis E [m]")
 plt.ylabel("Deviation relative to reference point, axis N [m]")
+
 plt.gca().set_aspect('equal', adjustable='box')
+
 plt.grid()
 
-plt.savefig(folder + "gps_deviation.svg", format="svg", dpi=1200)
+plt.savefig(folder + "gps_deviation.svg", format="svg")
 plt.clf()
 
 
-
+"""Commented, because results unreadable due to GPS inacuracy
 ### deltaH from gps and bmp280
 y1 = file[:,7]
 y2 = file[:,10]
@@ -76,8 +75,9 @@ plt.grid()
 plt.xlabel("Time [s]")
 plt.ylabel("Altitude variation [m]")
 plt.legend()
-plt.savefig(folder + "deltaH.svg", format="svg", dpi=1200)
+plt.savefig(folder + "deltaH.svg", format="svg")
 plt.clf()
+"""
 
 
 
@@ -88,5 +88,6 @@ plt.grid()
 plt.title("Altitude variation from start point, across time")
 plt.xlabel("Time [s]")
 plt.ylabel("Altitude profile [m]")
+
 plt.savefig(folder + "altimetric_profile.svg", format="svg")
 plt.clf()
