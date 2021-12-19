@@ -63,16 +63,18 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  //passe les arguments en variable
   char * filename = argv[1];
   int csvLen = atoi(argv[2]);
   int csvWid = atoi(argv[3]);
   double mass = atof(argv[4]);
 
-  double cr = 0.003;
-  float g = 9.81;
-  float n = 0.94;
-  float cwA = 0.39;
-  float r = 1.2;
+  //variables constantes
+  const double cr = 0.003;
+  const float g = 9.81;
+  const float n = 0.94;
+  const float cwA = 0.39;
+  const float r = 1.2;
 
 
 
@@ -371,7 +373,7 @@ int main(int argc, char *argv[]) {
   }
 
 
-
+  //libere la memoire
   free(pythonFile);
   free(wgs84);
   free(lv95X);
@@ -391,6 +393,7 @@ int main(int argc, char *argv[]) {
   free(totalForce);
   free(power);
   free(sumEnergy);
+
 
   return 0;
 }
